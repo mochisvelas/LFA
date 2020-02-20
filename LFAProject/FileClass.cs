@@ -29,5 +29,18 @@ namespace LFAProject
                 return false;
             }
         }
+
+        public bool SplitTokens(string fileName, ref string error) 
+        {
+            var lines = File.ReadLines(fileName);
+            foreach (var line in lines) 
+            {
+                byte[] bArray = Encoding.ASCII.GetBytes(line);
+                //btree method that will compare each ascii
+                if (error != null && error != "Bad filetype" && error != "Null file")                
+                    return false;  
+            }
+            return true;
+        }
     }
 }
