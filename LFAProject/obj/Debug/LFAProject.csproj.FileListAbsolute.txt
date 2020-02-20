@@ -6,3 +6,4 @@ C:\VSprojects\LFAProject\LFAProject\obj\Debug\LFAProject.Properties.Resources.re
 C:\VSprojects\LFAProject\LFAProject\obj\Debug\LFAProject.csproj.GenerateResource.cache
 C:\VSprojects\LFAProject\LFAProject\obj\Debug\LFAProject.exe
 C:\VSprojects\LFAProject\LFAProject\obj\Debug\LFAProject.pdb
+C:\VSprojects\LFAProject\LFAProject\obj\Debug\LFAProject.Form1.resources
