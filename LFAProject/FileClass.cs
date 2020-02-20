@@ -10,8 +10,8 @@ namespace LFAProject
     class FileClass
     {
         /// <summary>Checks if the filetype is correct</summary>
-        /// <param name="file">The file uploaded by the user</param>
-        /// <param name="filetype">The extension of the file to check</param>
+        /// <param name="fileName">The file selected by the user</param>
+        /// <param name="filetype">The correct extension</param>
         /// <param name="error">The error message to get</param>
         /// <returns>True if the file type is correct, otherwise false</returns>
         public bool IsFileTypeCorrect(string fileName, string filetype, ref string error)
@@ -30,6 +30,10 @@ namespace LFAProject
             }
         }
 
+        /// <summary>Splits each line to tokens and compares them with the regular expression tree</summary>
+        /// <param name="fileName">The file selected by the user</param>
+        /// <param name="error">The error message to get</param>
+        /// <returns>True if the tokens are compared successfully, otherwise false</returns>
         public bool SplitTokens(string fileName, ref string error) 
         {
             var lines = File.ReadLines(fileName);
