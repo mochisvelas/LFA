@@ -9,10 +9,13 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+
 namespace LFAProject
 {
     public partial class Form1 : Form
     {
+        private readonly FileClass fileClass = new FileClass();
+        string error = string.Empty;
         public Form1()
         {
             InitializeComponent();
@@ -21,8 +24,8 @@ namespace LFAProject
         private void button1_Click(object sender, EventArgs e)
         {
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
-            {
-                //Open and read file code
+            {                
+                fileClass.IsFileTypeCorrect(openFileDialog1.FileName, ".txt", ref error);
             }
         }
     }
