@@ -16,7 +16,7 @@ namespace LFAProject
         /// <returns>True if the file type is correct, otherwise false</returns>
         public bool IsFileTypeCorrect(string fileName, string filetype, ref string error)
         {            
-            if (new FileInfo(fileName) != null)
+            if (new FileInfo(fileName).Length != 0)
             {
                 if (filetype.Equals(Path.GetExtension(fileName), StringComparison.OrdinalIgnoreCase))
                     return true;

@@ -26,7 +26,15 @@ namespace LFAProject
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
             {                
                 fileClass.IsFileTypeCorrect(openFileDialog1.FileName, ".txt", ref error);
-            }
+                if (error == "Bad filetype")
+                {
+                    MessageBox.Show("Seleccione un archivo .txt", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                else if (error == "Null file")
+                {
+                    MessageBox.Show("El archivo está vacío.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }            
         }
     }
 }
