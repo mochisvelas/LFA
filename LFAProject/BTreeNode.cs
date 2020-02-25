@@ -11,7 +11,7 @@ namespace LFAProject
         string Token;
         BTreeNode right, left;
 
-        BTreeNode(string value) 
+        public BTreeNode(string value) 
         {
             Token = value;
             right = left = null;
