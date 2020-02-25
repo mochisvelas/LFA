@@ -8,5 +8,13 @@ namespace LFAProject
 {
     class BTreeNode
     {
+        string Token;
+        BTreeNode right, left;
+
+        BTreeNode(string value) 
+        {
+            Token = value;
+            right = left = null;
+        }
     }
 }
