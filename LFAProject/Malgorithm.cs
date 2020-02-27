@@ -8,17 +8,19 @@ namespace LFAProject
 {
     class Malgorithm
     {
-        string TokensER = "";
-        string ActionsER = "";
+        string TokensER = string.Empty;
+        string ActionsER = string.Empty;
+        Queue<string> eg = new Queue<string>("(.a.|.b.).chnd.c".Split('.'));
         Queue<string> SetTokens = new Queue<string>("(.SETS./n.+.(.id.+.' '.*.=.' '.*.(.'.TAZo.'.interval.'.TAZf.'.|.'.tazo.'.interval.'.tazf.'.|.'.t09o.'.interval.'.t09f.'.).(./+.'.TAZo.'.interval.'.TAZf.'.|.'.tazo.'.interval.'.tazf.'.|.'.t09o.'.interval.'.t09f.'.).*)./n.).+.#".Split('.'));
-        List<string> TerminalSigns = new List<string> { "SETS", "id", "TAZo", "TAZf", "interval", "tazo", "tazf", "T09o", "T09f", "/+", "/n", " ", "=", "#" };
-        List<string> OperatorSigns = new List<string> { "+", "(", ")", "?", "*", "|" };
+        List<string> TerminalSigns = new List<string> { "SETS", "id", "TAZo", "TAZf", "interval", "tazo", "tazf", "T09o", "T09f", "/+", "/n", " ", "=", "#", "a", "b", "c"};
+        List<string> OperatorSigns = new List<string> { "+", "(", ")", "?", "*", "|", "chnd" };
         Stack<string> TokenStack = new Stack<string>();
         Stack<BTreeNode> BTreeStack = new Stack<BTreeNode>();
         Dictionary<string, int> dicPrecedence= new Dictionary<string, int> { {"/", 1}, {"(", 2}, {")", 2}, {"+", 3}, {"?", 3}, {"*", 3},
-        {".", 4}, {"^", 5}, {"$", 5}, {"|", 6}};
+        {"chnd", 4}, {"^", 5}, {"$", 5}, {"|", 6}};
         public void FillRETree() 
         {
+            CreateRETree(eg);
             CreateRETree(SetTokens);                       
         }
 
@@ -45,8 +47,6 @@ namespace LFAProject
                 {
                     BTreeNode treeNode = new BTreeNode(Token);
                     BTreeStack.Push(treeNode);
-                    return null;
-
                 }
                 else if (Token == "(")
                 {
@@ -100,7 +100,7 @@ namespace LFAProject
                         temp.left = BTreeStack.Pop();
                         BTreeStack.Push(temp);
                     }
-                    else if (Token == "|" || Token == ".")
+                    else if (Token == "|" || Token == "chnd")
                     {
                         TokenStack.Push(Token);
                     }

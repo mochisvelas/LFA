@@ -25,6 +25,7 @@ namespace LFAProject
         {
  
             Malgorithm malgorithmgg = new Malgorithm();
+            malgorithmgg.FillRETree();
 
             openFileDialog1.Filter = "Text|*.txt|All|*.*";
 
