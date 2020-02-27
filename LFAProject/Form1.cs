@@ -23,11 +23,11 @@ namespace LFAProject
 
         private void button1_Click(object sender, EventArgs e)
         {
-<<<<<<< HEAD
+ 
             Malgorithm malgorithmgg = new Malgorithm();
-=======
+
             openFileDialog1.Filter = "Text|*.txt|All|*.*";
->>>>>>> master
+
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
             {                
                 fileClass.IsFileTypeCorrect(openFileDialog1.FileName, ".txt", ref error);

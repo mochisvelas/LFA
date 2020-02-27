@@ -10,8 +10,7 @@ namespace LFAProject
     {
         string TokensER = "";
         string ActionsER = "";
-        Queue<string> gg = new Queue<string>("(.SETS./n.+.(.id.+.' '.*.=.' '.*.(.'.TAZo.'.interval.'.TAZf.'.|.'.tazo.'.interval.'.tazf.'.|.'.t09o.'.interval.'.t09f.'.).(./+.'.TAZo.'.interval.'.TAZf.'.|.'.tazo.'.interval.'.tazf.'.|.'.t09o.'.interval.'.t09f.'.).*)./n.).+.#".Split('.'));
-        List<string> SetsTokens = "(.SETS./n.+.(.id.+.' '.*.=.' '.*.(.'.TAZo.'.interval.'.TAZf.'.|.'.tazo.'.interval.'.tazf.'.|.'.t09o.'.interval.'.t09f.'.).(./+.'.TAZo.'.interval.'.TAZf.'.|.'.tazo.'.interval.'.tazf.'.|.'.t09o.'.interval.'.t09f.'.).*)./n.).+.#".Split('.').ToList<string>();
+        Queue<string> SetTokens = new Queue<string>("(.SETS./n.+.(.id.+.' '.*.=.' '.*.(.'.TAZo.'.interval.'.TAZf.'.|.'.tazo.'.interval.'.tazf.'.|.'.t09o.'.interval.'.t09f.'.).(./+.'.TAZo.'.interval.'.TAZf.'.|.'.tazo.'.interval.'.tazf.'.|.'.t09o.'.interval.'.t09f.'.).*)./n.).+.#".Split('.'));
         List<string> TerminalSigns = new List<string> { "SETS", "id", "TAZo", "TAZf", "interval", "tazo", "tazf", "T09o", "T09f", "/+", "/n", " ", "=", "#" };
         List<string> OperatorSigns = new List<string> { "+", "(", ")", "?", "*", "|" };
         Stack<string> TokenStack = new Stack<string>();
@@ -20,7 +19,7 @@ namespace LFAProject
         {"/", 4}, {"/", 5}, {"/", 5}, {"/", 6}};
         public void FillRETree() 
         {
-            CreateRETree(gg);                       
+            CreateRETree(SetTokens);                       
         }
 
         public bool HasMinorPrecedence(string Token) 
