@@ -15,8 +15,8 @@ namespace LFAProject
         List<string> OperatorSigns = new List<string> { "+", "(", ")", "?", "*", "|" };
         Stack<string> TokenStack = new Stack<string>();
         Stack<BTreeNode> BTreeStack = new Stack<BTreeNode>();
-        Dictionary<string, int> dicPrecedence= new Dictionary<string, int> { {"/", 1}, {"/", 2}, {"/", 2}, {"/", 3}, {"/", 3}, {"/", 3},
-        {"/", 4}, {"/", 5}, {"/", 5}, {"/", 6}};
+        Dictionary<string, int> dicPrecedence= new Dictionary<string, int> { {"/", 1}, {"(", 2}, {")", 2}, {"+", 3}, {"?", 3}, {"*", 3},
+        {".", 4}, {"^", 5}, {"$", 5}, {"|", 6}};
         public void FillRETree() 
         {
             CreateRETree(SetTokens);                       
