@@ -10,18 +10,18 @@ namespace LFAProject
     {
         string TokensER = string.Empty;
         string ActionsER = string.Empty;
-        Queue<string> eg = new Queue<string>("(.a.|.b.).chnd.c".Split('.'));
-        Queue<string> SetTokens = new Queue<string>("(.SETS./n.+.(.id.+.' '.*.=.' '.*.(.'.TAZo.'.interval.'.TAZf.'.|.'.tazo.'.interval.'.tazf.'.|.'.t09o.'.interval.'.t09f.'.).(./+.'.TAZo.'.interval.'.TAZf.'.|.'.tazo.'.interval.'.tazf.'.|.'.t09o.'.interval.'.t09f.'.).*)./n.).+.#".Split('.'));
-        List<string> TerminalSigns = new List<string> { "SETS", "id", "TAZo", "TAZf", "interval", "tazo", "tazf", "T09o", "T09f", "/+", "/n", " ", "=", "#", "a", "b", "c"};
-        List<string> OperatorSigns = new List<string> { "+", "(", ")", "?", "*", "|", "chnd" };
+        Queue<char> eg = new Queue<char>("(a|b)·c?".ToCharArray());
+        Queue<char> SetTokens = new Queue<char>(@"SETS·/n+·(/t+·' '+·id+·' '*·=·' '*·(('AZ'·..·'AZ')|('az'·..·'az')|('09'·..·'09')|(CHR(09+)·..·CHR(09+))|'symbol')·((\+·(('AZ'·..·'AZ')|('az'·..·'az')|('09'·..·'09')|(CHR(09+)·..·CHR(09+))))*)·/n+)+·#".ToCharArray());
+        List<string> TerminalSigns = new List<string> { "S", "E", "T", "S", "i", "d", "A", "Z", ".", "a", "z", "0", "9", "n", "/", " ","t", "=", "#", "a", "b", "c", "symbol" };
+        List<string> OperatorSigns = new List<string> { "+", "(", ")", "?", "*", "|", "·" };
         Stack<string> TokenStack = new Stack<string>();
         Stack<BTreeNode> BTreeStack = new Stack<BTreeNode>();
-        Dictionary<string, int> dicPrecedence= new Dictionary<string, int> { {"/", 1}, {"(", 2}, {")", 2}, {"+", 3}, {"?", 3}, {"*", 3},
-        {"chnd", 4}, {"^", 5}, {"$", 5}, {"|", 6}};
+        Dictionary<string, int> dicPrecedence = new Dictionary<string, int> { {"/", 1}, {"(", 2}, {")", 2}, {"+", 3}, {"?", 3}, {"*", 3},
+        {"·", 4}, {"^", 5}, {"$", 5}, {"|", 6}};
         public void FillRETree() 
         {
-            CreateRETree(eg);
-            CreateRETree(SetTokens);                       
+            CreateRETree(SetTokens);
+            CreateRETree(eg);                                   
         }
 
         public bool HasMinorPrecedence(string Token) 
@@ -38,14 +38,32 @@ namespace LFAProject
             }
         }
 
-        public BTreeNode CreateRETree(Queue<string> Tokens) 
+        public bool IsTerminalSign(string Token, Queue<char> Tokens)
+        {
+            if (Token == @"\" && OperatorSigns.Contains(Tokens.Peek().ToString()))            
+                return true;
+            else
+                return false;
+        }
+
+        public BTreeNode CreateRETree(Queue<char> Tokens) 
         {
             while (Tokens.Count() != 0)
             {
-                string Token = Tokens.Dequeue();
+                string Token = Tokens.Dequeue().ToString();
                 if (TerminalSigns.Contains(Token))
-                {
+                {                    
                     BTreeNode treeNode = new BTreeNode(Token);
+                    BTreeStack.Push(treeNode);
+                }
+                else if (IsTerminalSign(Token, Tokens))
+                {                    
+                    BTreeNode treeNode = new BTreeNode(Tokens.Dequeue().ToString());
+                    BTreeStack.Push(treeNode);
+                }
+                else if (IsTerminalSign(Token, Tokens) == false)
+                {
+                    BTreeNode treeNode = new BTreeNode(" ");
                     BTreeStack.Push(treeNode);
                 }
                 else if (Token == "(")
@@ -100,7 +118,7 @@ namespace LFAProject
                         temp.left = BTreeStack.Pop();
                         BTreeStack.Push(temp);
                     }
-                    else if (Token == "|" || Token == "chnd")
+                    else if (Token == "|" || Token == "·")
                     {
                         TokenStack.Push(Token);
                     }
