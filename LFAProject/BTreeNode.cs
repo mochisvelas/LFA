@@ -21,6 +21,11 @@ namespace LFAProject
         {
             Token = null;
             right = left = null;
+        }        
+
+        public string GetValue()
+        {
+            return Token;
         }
     }
 }
