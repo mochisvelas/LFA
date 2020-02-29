@@ -21,7 +21,14 @@ namespace LFAProject
         {
             Token = null;
             right = left = null;
-        }        
+        }
+
+        public BTreeNode(string value, BTreeNode leftChild, BTreeNode rightChild)
+        {
+            Token = value;
+            left = leftChild;
+            right = rightChild;
+        }
 
         public string GetValue()
         {
