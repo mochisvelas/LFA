@@ -15,6 +15,7 @@ namespace LFAProject
     public partial class Form1 : Form
     {
         private readonly FileClass fileClass = new FileClass();
+        Malgorithm malgorithmgg = new Malgorithm();
         string error = string.Empty;
         public Form1()
         {
@@ -22,9 +23,8 @@ namespace LFAProject
         }
 
         private void button1_Click(object sender, EventArgs e)
-        {
- 
-            Malgorithm malgorithmgg = new Malgorithm();
+        { 
+            
             malgorithmgg.FillRETree();
 
             openFileDialog1.Filter = "Text|*.txt|All|*.*";
@@ -39,6 +39,18 @@ namespace LFAProject
                 else if (error == "Null file")
                 {
                     MessageBox.Show("El archivo está vacío.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                else
+                {
+                    fileClass.CheckGrammar(openFileDialog1.FileName, ref error);
+                    if (error != "success")
+                    {
+                        //Grammar is correct
+                    }
+                    else
+                    {
+                        //Grammar has error in line {0} and col {0}
+                    }
                 }
             }            
         }

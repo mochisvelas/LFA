@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+
 namespace LFAProject
 {
     class FileClass
@@ -34,17 +35,27 @@ namespace LFAProject
         /// <param name="fileName">The file selected by the user</param>
         /// <param name="error">The error message to get</param>
         /// <returns>True if the tokens are compared successfully, otherwise false</returns>
-        public bool SplitTokens(string fileName, ref string error) 
+        public bool CheckGrammar(string fileName, ref string error) 
         {
-            var lines = File.ReadLines(fileName);
-            foreach (var line in lines) 
+            StreamReader grammarFile = new StreamReader(fileName);
+            string grammar = grammarFile.ReadToEnd();
+            int index = 0;
+            while (index != -1)
             {
-                byte[] bArray = Encoding.ASCII.GetBytes(line);
-                //btree method that will compare each ascii
-                if (error != null && error != "Bad filetype" && error != "Null file")                
-                    return false;  
+                index = grammar.IndexOf(" ");
+                if (index != -1)
+                    grammar = grammar.Remove(index, 1);
+                index = grammar.IndexOf("\r");
+                if (index != -1)
+                    grammar = grammar.Remove(index, 1);
+                index = grammar.IndexOf("\t");
+                if (index != -1)
+                    grammar = grammar.Remove(index, 1);                
             }
+
             return true;
         }
+
+
     }
 }
