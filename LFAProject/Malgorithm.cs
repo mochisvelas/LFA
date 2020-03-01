@@ -21,7 +21,8 @@ namespace LFAProject
         public void FillRETree() 
         {
             //CreateRETree(eg);
-            CreateRETree(SetTokens);            
+            BTreeNode node = new BTreeNode();            
+            string iOrder = node.InOrderTraversal(CreateRETree(SetTokens));
         }
 
         public bool HasMinorPrecedence(string Token) 

@@ -10,7 +10,7 @@ namespace LFAProject
     {
         public string Token;
         public BTreeNode right, left;
-
+        string inOrder = "";
         public BTreeNode(string value) 
         {
             Token = value;
@@ -33,6 +33,23 @@ namespace LFAProject
         public string GetValue()
         {
             return Token;
+        }
+
+        public string InOrderTraversal(BTreeNode node) 
+        {
+            if (node == null)
+                return inOrder;
+
+            /* first recur on left child */
+            InOrderTraversal(node.left);
+
+            /* then print the data of node */
+            
+            inOrder += node.Token;
+            /* now recur on right child */
+            InOrderTraversal(node.right);
+            
+            return inOrder;
         }
     }
 }
