@@ -9,8 +9,11 @@ namespace LFAProject
     class BTreeNode
     {
         public string Token;
+        public BTreeNode parentNode;
         public BTreeNode right, left;
         string inOrder = "";
+        Queue<char> copyGrammar;
+        int cont = 0;
         public BTreeNode(string value) 
         {
             Token = value;
@@ -35,21 +38,80 @@ namespace LFAProject
             return Token;
         }
 
-        public string InOrderTraversal(BTreeNode node) 
+        public BTreeNode hasOrParent(BTreeNode node) 
+        {
+            if (node.parentNode != null)
+            {
+                if (node.parentNode.Token == "|")
+                    return node;
+                hasOrParent(node.parentNode);
+            }            
+                return null;              
+        }
+
+        public void InOrderAndCompare(BTreeNode node, Queue<char> grammar, ref string error) 
         {
             if (node == null)
-                return inOrder;
+                return;
 
             /* first recur on left child */
-            InOrderTraversal(node.left);
+            InOrderAndCompare(node.left, grammar, ref error);
 
             /* then print the data of node */
+
+            if (grammar.Peek().ToString() == node.Token && hasOrParent(node) != null)
+            {
+                if (cont != 0)
+                    copyGrammar = grammar;
+                                
+                grammar.Dequeue();
+                cont++;
+            }
+            else if (grammar.Peek().ToString() != node.Token && hasOrParent(node) != null)
+            {
+                grammar = copyGrammar;
+                return;               
+            }
+            else if (grammar.Peek().ToString() != node.Token && hasOrParent(node) == null)
+            {
+                error = "frick off, your grammar is bad!";
+                return; //End proccess and return error
+            }            
+
+            /*if (grammar.Dequeue().ToString() != node.Token)
+            {
+                while (node.Token != "|")
+                {
+                    return inOrder;
+                }
+
+                grammar = copyGrammar;
+                if (hasOrParent(node) != null)
+                {
+
+                }
+                else
+                {
+                    error = "frick off, your grammar is bad!";
+                }
+            }
+
+            //if (node.Token == "|")
+            {
+                if (grammar.Dequeue().ToString() != node.Token)
+                {
+                    error = "frick off, your grammar is bad!";
+                }
+            }
+            else if (node.Token != "·")
+            {
+
+            }*/
             
-            inOrder += node.Token;
             /* now recur on right child */
-            InOrderTraversal(node.right);
+            InOrderAndCompare(node.right, grammar, ref error);
             
-            return inOrder;
+            return;
         }
     }
 }

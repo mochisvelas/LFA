@@ -10,19 +10,20 @@ namespace LFAProject
     {
         string TokensER = string.Empty;
         string ActionsER = string.Empty;
-        Queue<char> eg = new Queue<char>("(a+·b*·c?)·#".ToCharArray());
-        Queue<char> SetTokens = new Queue<char>(@"((S·E·T·S·/n+·identifier·=·('·AZ·'·.·.·'·AZ·'|'·az·'·.·.·'·az·'|'·09·'·.·.·'·09·'|C·H·R·\(·09+·\)·.·.·C·H·R·\(·09+·\)|'·s·y·m·')·(\+·('·AZ·'·.·.·'·AZ·'|'·az·'·.·.·'·az·'|'·09·'·.·.·'·09·'|C·H·R·\(·09+·\)·.·.·C·H·R·\(·09+·\)|'·s·y·m·'))*·/n+)?)·#".ToCharArray());
+        Queue<char> eg = new Queue<char>("(ab|acd|cd)·#".ToCharArray());
+        Queue<char> SetTokens = new Queue<char>(@"((S·E·T·S·/n+·identifier·=·('·AZ·'·.·.·'·AZ·'|'·az·'·.·.·'·az·'|'·09·'·.·.·'·09·'|C·H·R·\(·09+·\)·.·.·C·H·R·\(·09+·\)|'·s·y·m·')·((\+·('·AZ·'·.·.·'·AZ·'|'·az·'·.·.·'·az·'|'·09·'·.·.·'·09·'|C·H·R·\(·09+·\)·.·.·C·H·R·\(·09+·\)|'·s·y·m·'))*)·/n+)?)·#".ToCharArray());
         List<string> TerminalSigns = new List<string> { "S", "E", "T", "S", "i", "d", "A", "Z", ".", "a", "z", "0", "9", "n", "/", " ", "t", "=", "#", "'", "a", "b", "c", "s", "y", "m", "b", "o", "l", "C", "H", "R", "e","   ", "f", "r", @"\" };
         List<string> OperatorSigns = new List<string> { "+", "(", ")", "[", "]", "?", "*", "|", "·", @"\" };
         Stack<string> TokenStack = new Stack<string>();
         Stack<BTreeNode> BTreeStack = new Stack<BTreeNode>();
         Dictionary<string, int> dicPrecedence = new Dictionary<string, int> { /*{@"\", 7},*/ {"[", 6 },{"]", 6 }, {"(", 5}, {")", 5}, {"+", 4}, {"?", 4}, {"*", 4},
         {"·", 3}, {"^", 2}, {"$", 2}, {"|", 1}};
-        public void FillRETree() 
+        public BTreeNode FillRETree() 
         {
             //CreateRETree(eg);
-            BTreeNode node = new BTreeNode();            
-            string iOrder = node.InOrderTraversal(CreateRETree(SetTokens));
+            BTreeNode node = new BTreeNode();
+            //string iOrder = node.InOrderTraversal(CreateRETree(SetTokens));
+            return CreateRETree(SetTokens);
         }
 
         public bool HasMinorPrecedence(string Token) 
@@ -107,7 +108,9 @@ namespace LFAProject
 
                         BTreeNode temp = new BTreeNode(TokenStack.Pop());
                         temp.right = BTreeStack.Pop();
+                        temp.right.parentNode = temp;
                         temp.left = BTreeStack.Pop();
+                        temp.left.parentNode = temp;
                         BTreeStack.Push(temp);
                         if (TokenStack.Count() != 0)
                         {
@@ -128,6 +131,7 @@ namespace LFAProject
                             return null;
                         }
                         opNode.left = BTreeStack.Pop();
+                        opNode.left.parentNode = opNode;
                         BTreeStack.Push(opNode);
                     }
                     else if (TokenStack.Count() != 0 && TokenStack.Peek() != "(" && HasMinorPrecedence(Token))
@@ -138,7 +142,9 @@ namespace LFAProject
                             return null;
                         }
                         temp.right = BTreeStack.Pop();
+                        temp.right.parentNode = temp;
                         temp.left = BTreeStack.Pop();
+                        temp.left.parentNode = temp;
                         BTreeStack.Push(temp);
                         if (Token == "·")
                         {
@@ -177,7 +183,9 @@ namespace LFAProject
                 }                
                 BTreeNode temp = new BTreeNode(TokenStack.Pop());
                 temp.right = BTreeStack.Pop();
+                temp.right.parentNode = temp;
                 temp.left = BTreeStack.Pop();
+                temp.left.parentNode = temp;
                 BTreeStack.Push(temp);
             }
 

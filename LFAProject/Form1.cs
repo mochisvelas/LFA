@@ -23,10 +23,8 @@ namespace LFAProject
         }
 
         private void button1_Click(object sender, EventArgs e)
-        { 
-            
-            malgorithmgg.FillRETree();
-
+        {
+            //malgorithmgg.FillRETree();
             openFileDialog1.Filter = "Text|*.txt|All|*.*";
 
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
@@ -42,7 +40,7 @@ namespace LFAProject
                 }
                 else
                 {
-                    fileClass.CheckGrammar(openFileDialog1.FileName, ref error);
+                    fileClass.CheckGrammar(openFileDialog1.FileName, ref error, malgorithmgg.FillRETree());
                     if (error != "success")
                     {
                         //Grammar is correct

@@ -35,8 +35,9 @@ namespace LFAProject
         /// <param name="fileName">The file selected by the user</param>
         /// <param name="error">The error message to get</param>
         /// <returns>True if the tokens are compared successfully, otherwise false</returns>
-        public bool CheckGrammar(string fileName, ref string error) 
+        public bool CheckGrammar(string fileName, ref string error, BTreeNode regexTree) 
         {
+            BTreeNode btree = new BTreeNode();
             StreamReader grammarFile = new StreamReader(fileName);
             string grammar = grammarFile.ReadToEnd();
             int index = 0;
@@ -52,7 +53,9 @@ namespace LFAProject
                 if (index != -1)
                     grammar = grammar.Remove(index, 1);                
             }
-
+            Queue<char> grammarChar = new Queue<char>(grammar.ToCharArray());
+            btree.InOrderAndCompare(regexTree, grammarChar, ref error);
+            
             return true;
         }
 
