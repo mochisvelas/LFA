@@ -38,22 +38,34 @@ namespace LFAProject
         public bool ReadGrammar(string fileName, ref string error, BTreeNode regexTree) 
         {
             BTreeNode btree = new BTreeNode();
-            StreamReader grammarFile = new StreamReader(fileName);
-            string grammar = grammarFile.ReadToEnd();
-            int index = 0;
-            while (index != -1)
-            {
-                index = grammar.IndexOf(" ");
-                if (index != -1)
-                    grammar = grammar.Remove(index, 1);
-                index = grammar.IndexOf("\r");
-                if (index != -1)
-                    grammar = grammar.Remove(index, 1);
-                index = grammar.IndexOf("\t");
-                if (index != -1)
-                    grammar = grammar.Remove(index, 1);                
+            CheckGrammar checkgrammar = new CheckGrammar();
+            //StreamReader grammarFile = new StreamReader(fileName);
+            //string grammar = grammarFile.ReadToEnd();
+            var lines = File.ReadAllLines(fileName);
+            for (var i = 0; i < lines.Length; i++)
+            {                
+                string grammar = lines[i];                
+                string copyGrammar = new string(grammar.ToCharArray());
+                int index = 0;
+                while (index != -1)
+                {
+                    index = grammar.IndexOf(" ");
+                    if (index != -1)
+                        grammar = grammar.Remove(index, 1);
+                    index = grammar.IndexOf("\r");
+                    if (index != -1)
+                        grammar = grammar.Remove(index, 1);
+                    index = grammar.IndexOf("\t");
+                    if (index != -1)
+                        grammar = grammar.Remove(index, 1);
+                }
+                Queue<char> grammarQ = new Queue<char>(grammar.ToCharArray());
+                checkgrammar.CompareGrammar(grammarQ, ref error);
+                error += ("en la línea {0}", "i");
             }
-            Queue<char> grammarChar = new Queue<char>(grammar.ToCharArray());
+            
+            
+            
             btree.InOrderAndCompare(regexTree, grammarChar, ref error);
             
             return true;
