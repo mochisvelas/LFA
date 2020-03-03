@@ -40,7 +40,7 @@ namespace LFAProject
                 }
                 else
                 {
-                    fileClass.CheckGrammar(openFileDialog1.FileName, ref error, malgorithmgg.FillRETree());
+                    fileClass.ReadGrammar(openFileDialog1.FileName, ref error, malgorithmgg.FillRETree());
                     if (error != "success")
                     {
                         //Grammar is correct

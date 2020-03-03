@@ -35,7 +35,7 @@ namespace LFAProject
         /// <param name="fileName">The file selected by the user</param>
         /// <param name="error">The error message to get</param>
         /// <returns>True if the tokens are compared successfully, otherwise false</returns>
-        public bool CheckGrammar(string fileName, ref string error, BTreeNode regexTree) 
+        public bool ReadGrammar(string fileName, ref string error, BTreeNode regexTree) 
         {
             BTreeNode btree = new BTreeNode();
             StreamReader grammarFile = new StreamReader(fileName);

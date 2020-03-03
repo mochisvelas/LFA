@@ -10,7 +10,7 @@ namespace LFAProject
     {
         string TokensER = string.Empty;
         string ActionsER = string.Empty;
-        Queue<char> eg = new Queue<char>("(ab|acd|cd)·#".ToCharArray());
+        Queue<char> eg = new Queue<char>("(a·b·c·d|a·c·d|c·d)·#".ToCharArray());
         Queue<char> SetTokens = new Queue<char>(@"((S·E·T·S·/n+·identifier·=·('·AZ·'·.·.·'·AZ·'|'·az·'·.·.·'·az·'|'·09·'·.·.·'·09·'|C·H·R·\(·09+·\)·.·.·C·H·R·\(·09+·\)|'·s·y·m·')·((\+·('·AZ·'·.·.·'·AZ·'|'·az·'·.·.·'·az·'|'·09·'·.·.·'·09·'|C·H·R·\(·09+·\)·.·.·C·H·R·\(·09+·\)|'·s·y·m·'))*)·/n+)?)·#".ToCharArray());
         List<string> TerminalSigns = new List<string> { "S", "E", "T", "S", "i", "d", "A", "Z", ".", "a", "z", "0", "9", "n", "/", " ", "t", "=", "#", "'", "a", "b", "c", "s", "y", "m", "b", "o", "l", "C", "H", "R", "e","   ", "f", "r", @"\" };
         List<string> OperatorSigns = new List<string> { "+", "(", ")", "[", "]", "?", "*", "|", "·", @"\" };
@@ -23,7 +23,8 @@ namespace LFAProject
             //CreateRETree(eg);
             BTreeNode node = new BTreeNode();
             //string iOrder = node.InOrderTraversal(CreateRETree(SetTokens));
-            return CreateRETree(SetTokens);
+            //return CreateRETree(SetTokens);
+            return CreateRETree(eg);
         }
 
         public bool HasMinorPrecedence(string Token) 

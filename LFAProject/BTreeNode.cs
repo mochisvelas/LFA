@@ -14,6 +14,8 @@ namespace LFAProject
         string inOrder = "";
         Queue<char> copyGrammar;
         int cont = 0;
+        bool isGrammarCorrect = true;
+        bool isParentOr = false;
         public BTreeNode(string value) 
         {
             Token = value;
@@ -43,10 +45,13 @@ namespace LFAProject
             if (node.parentNode != null)
             {
                 if (node.parentNode.Token == "|")
+                {
+                    isParentOr = true;
                     return node;
+                }                    
                 hasOrParent(node.parentNode);
-            }            
-                return null;              
+            }
+            return null;
         }
 
         public void InOrderAndCompare(BTreeNode node, Queue<char> grammar, ref string error) 
@@ -58,24 +63,43 @@ namespace LFAProject
             InOrderAndCompare(node.left, grammar, ref error);
 
             /* then print the data of node */
+            if (isGrammarCorrect)
+            {
 
-            if (grammar.Peek().ToString() == node.Token && hasOrParent(node) != null)
-            {
-                if (cont != 0)
-                    copyGrammar = grammar;
-                                
-                grammar.Dequeue();
-                cont++;
             }
-            else if (grammar.Peek().ToString() != node.Token && hasOrParent(node) != null)
+            if (node.Token != "·")
             {
-                grammar = copyGrammar;
-                return;               
-            }
-            else if (grammar.Peek().ToString() != node.Token && hasOrParent(node) == null)
-            {
-                error = "frick off, your grammar is bad!";
-                return; //End proccess and return error
+                hasOrParent(node);
+
+                if (grammar.Peek().ToString() == node.Token && isParentOr && isGrammarCorrect)
+                {
+                    if (cont == 0)
+                        copyGrammar = new Queue<char>(grammar);
+
+                    grammar.Dequeue();
+                    cont++;
+                }
+                else if (grammar.Peek().ToString() != node.Token && isParentOr)
+                {
+                    if (copyGrammar != null)
+                        grammar = copyGrammar;
+                    isGrammarCorrect = false;
+                }
+                else if (grammar.Peek().ToString() != node.Token && !isParentOr)
+                {
+                    error = "frick off, your grammar is bad!";
+                    return; //End proccess and return error
+                }
+                else if (grammar.Peek().ToString() == "|")
+                {
+                    grammar.Dequeue();
+                    isGrammarCorrect = true;
+                    grammar = copyGrammar;
+                }
+                else
+                {
+                    grammar.Dequeue();
+                }
             }            
 
             /*if (grammar.Dequeue().ToString() != node.Token)
@@ -107,7 +131,7 @@ namespace LFAProject
             {
 
             }*/
-            
+
             /* now recur on right child */
             InOrderAndCompare(node.right, grammar, ref error);
             
