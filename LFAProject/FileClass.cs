@@ -39,12 +39,12 @@ namespace LFAProject
         {
             BTreeNode btree = new BTreeNode();
             CheckGrammar checkgrammar = new CheckGrammar();
-            //StreamReader grammarFile = new StreamReader(fileName);
-            //string grammar = grammarFile.ReadToEnd();
+            StreamReader grammarFile = new StreamReader(fileName);
+            string grammar = grammarFile.ReadToEnd();
             var lines = File.ReadAllLines(fileName);
             for (var i = 0; i < lines.Length; i++)
             {                
-                string grammar = lines[i];                
+                                
                 string copyGrammar = new string(grammar.ToCharArray());
                 int index = 0;
                 while (index != -1)
@@ -58,15 +58,14 @@ namespace LFAProject
                     index = grammar.IndexOf("\t");
                     if (index != -1)
                         grammar = grammar.Remove(index, 1);
-                }
-                Queue<char> grammarQ = new Queue<char>(grammar.ToCharArray());
-                checkgrammar.CompareGrammar(grammarQ, ref error);
+                }                
+                checkgrammar.CompareGrammar(fileName, ref error);
                 error += ("en la línea {0}", "i");
             }
             
             
             
-            btree.InOrderAndCompare(regexTree, grammarChar, ref error);
+            //btree.InOrderAndCompare(regexTree, grammarQ, ref error);
             
             return true;
         }

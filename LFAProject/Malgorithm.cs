@@ -8,24 +8,46 @@ namespace LFAProject
 {
     class Malgorithm
     {
-        string TokensER = string.Empty;
-        string ActionsER = string.Empty;
-        Queue<char> eg = new Queue<char>("(a·b·c·d|a·c·d|c·d)·#".ToCharArray());
-        Queue<char> SetTokens = new Queue<char>(@"((S·E·T·S·/n+·identifier·=·('·AZ·'·.·.·'·AZ·'|'·az·'·.·.·'·az·'|'·09·'·.·.·'·09·'|C·H·R·\(·09+·\)·.·.·C·H·R·\(·09+·\)|'·s·y·m·')·((\+·('·AZ·'·.·.·'·AZ·'|'·az·'·.·.·'·az·'|'·09·'·.·.·'·09·'|C·H·R·\(·09+·\)·.·.·C·H·R·\(·09+·\)|'·s·y·m·'))*)·/n+)?)·#".ToCharArray());
-        List<string> TerminalSigns = new List<string> { "S", "E", "T", "S", "i", "d", "A", "Z", ".", "a", "z", "0", "9", "n", "/", " ", "t", "=", "#", "'", "a", "b", "c", "s", "y", "m", "b", "o", "l", "C", "H", "R", "e","   ", "f", "r", @"\" };
-        List<string> OperatorSigns = new List<string> { "+", "(", ")", "[", "]", "?", "*", "|", "·", @"\" };
+        Queue<char> SetsRegex = new Queue<char>(@"((S·E·T·S·/n+·identifier·=·('·AZ·'·.·.·'·AZ·'|'·az·'·.·.·'·az·'|'·09·'·.·.·'·09·'|C·H·R·\(·09+·\)·.·.·C·H·R·\(·09+·\)|'·sym·')·((\+·('·AZ·'·.·.·'·AZ·'|'·az·'·.·.·'·az·'|'·09·'·.·.·'·09·'|C·H·R·\(·09+·\)·.·.·C·H·R·\(·09+·\)|'·sym·'))*)·/n+)?)·#".ToCharArray());
+        Queue<char> TokensRegex = new Queue<char>(@"(T·O·K·E·N·S·/n·(T·O·K·E·N·blnkspc+·09+·=·('·sym·'·((·'·sym·')+)|('·AZ·')+|'·(\?|\+|\(|\))·'|'·(\?|\+|\(|\))·'·'·(\?|\+|\(|\))·'|(AZ·(·(\?|\+)?))+|('·(quote|')·'·AZ·'·(quote|')·')·((\|·'·(quote|')·'·AZ·'·(quote|')·')*)|AZ·\(·AZ·\|·AZ·\)·(·(\*|\?)?)))·((/n·T·O·K·E·N·blnkspc+·09+·=·('·sym·'·((·'·sym·')+)|('·AZ·')+|'·(\?|\+|\(|\))·'|'·(\?|\+|\(|\))·'·'·(\?|\+|\(|\))·'|(AZ·(·(\?|\+)?))+|('·(quote|')·'·AZ+·'·(quote|')·')·((\|·'·(quote|')·'·AZ·'·(quote|')·')*)|AZ+·\(·AZ·\|·AZ·\)·(·(\*|\?)?)))*)·{·R·E·S·E·R·V·A·D·A·S·\(·\)·})·#".ToCharArray());
+        Queue<char> ActionsRegex = new Queue<char>(@"(A·C·T·I·O·N·S·(R·E·S·E·R·V·A·D·A·S·\(·\)·{·(09+·=·'·AZ+·')·(/n·09+·=·'·AZ·')·})·((/n·AZ·\(·\)·{·(09+·=·'·AZ+·')·(/n·09+·=·'·AZ·')·})*))·#".ToCharArray());
+        Queue<char> ErrorrsRegex = new Queue<char>(@"AZ·E·R·R·O·R·=·09+·((/n·AZ·E·R·R·O·R·=·09+)*)".ToCharArray());
+        Queue<char> eg = new Queue<char>("(a·b·c·d|a·c·d|c·d)·#".ToCharArray());        
+        List<string> TerminalSigns = new List<string> { "S", "E", "T", "S", "i", "d", "A", "Z", ".", "a", "z", "0", "9", "n", "/", " ", "t", "=", "#", "'", "a", "b", "c", "s", "y", "m", "b", "o", "l", "C", "H", "R", "e","   ", "f", "r", @"\","O","K","N","V","q","o","u","t","b","l","s","k","n","p","D" };
+        List<string> OperatorSigns = new List<string> { "+", "(", ")", "[", "]", "?", "*", "|", "·", @"\"};
         Stack<string> TokenStack = new Stack<string>();
         Stack<BTreeNode> BTreeStack = new Stack<BTreeNode>();
         Dictionary<string, int> dicPrecedence = new Dictionary<string, int> { /*{@"\", 7},*/ {"[", 6 },{"]", 6 }, {"(", 5}, {")", 5}, {"+", 4}, {"?", 4}, {"*", 4},
         {"·", 3}, {"^", 2}, {"$", 2}, {"|", 1}};
-        public BTreeNode FillRETree() 
+
+                
+        public BTreeNode FillRETree(string section) 
         {
             //CreateRETree(eg);
-            BTreeNode node = new BTreeNode();
+            //BTreeNode node = new BTreeNode();
             //string iOrder = node.InOrderTraversal(CreateRETree(SetTokens));
             //return CreateRETree(SetTokens);
-            return CreateRETree(eg);
-        }
+            if (section == "S")
+            {
+                return CreateRETree(SetsRegex);
+            }
+            else if (section =="T")
+            {
+                return CreateRETree(TokensRegex);
+            }
+            else if (section == "A")
+            {
+                return CreateRETree(ActionsRegex);
+            }
+            else if (section == "E")
+            {
+                return CreateRETree(ErrorrsRegex);
+            }
+            else
+            {
+                return null;
+            }            
+        }       
 
         public bool HasMinorPrecedence(string Token) 
         {
@@ -115,7 +137,11 @@ namespace LFAProject
                         BTreeStack.Push(temp);
                         if (TokenStack.Count() != 0)
                         {
-                            if (TokenStack.Peek() != "|")
+                            /*while (TokenStack.Count() != 0 && TokenStack.Peek() == "(")
+                            {
+                                TokenStack.Pop();
+                            }*/
+                            if (TokenStack.Peek() != "|" && TokenStack.Peek() != "·")
                             {
                                 TokenStack.Pop();
                             }

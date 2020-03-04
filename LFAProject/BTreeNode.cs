@@ -11,11 +11,11 @@ namespace LFAProject
         public string Token;
         public BTreeNode parentNode;
         public BTreeNode right, left;
-        string inOrder = "";
-        Queue<char> copyGrammar;
-        int cont = 0;
-        bool isGrammarCorrect = true;
-        bool isParentOr = false;
+        //string inOrder = "";
+        //Queue<char> copyGrammar;
+        //int cont = 0;
+        //bool isGrammarCorrect = true;
+        //bool isParentOr = false;
         public BTreeNode(string value) 
         {
             Token = value;
@@ -40,7 +40,7 @@ namespace LFAProject
             return Token;
         }
 
-        public BTreeNode hasOrParent(BTreeNode node) 
+        /*public BTreeNode hasOrParent(BTreeNode node) 
         {
             if (node.parentNode != null)
             {
@@ -52,17 +52,17 @@ namespace LFAProject
                 hasOrParent(node.parentNode);
             }
             return null;
-        }
+        }*/
 
-        public void InOrderAndCompare(BTreeNode node, Queue<char> grammar, ref string error) 
+        /*public void InOrderAndCompare(BTreeNode node, Queue<char> grammar, ref string error) 
         {
             if (node == null)
                 return;
 
-            /* first recur on left child */
+            
             InOrderAndCompare(node.left, grammar, ref error);
 
-            /* then print the data of node */
+            
             if (isGrammarCorrect)
             {
 
@@ -88,7 +88,7 @@ namespace LFAProject
                 else if (grammar.Peek().ToString() != node.Token && !isParentOr)
                 {
                     error = "frick off, your grammar is bad!";
-                    return; //End proccess and return error
+                    return; 
                 }
                 else if (grammar.Peek().ToString() == "|")
                 {
@@ -102,7 +102,7 @@ namespace LFAProject
                 }
             }            
 
-            /*if (grammar.Dequeue().ToString() != node.Token)
+            if (grammar.Dequeue().ToString() != node.Token)
             {
                 while (node.Token != "|")
                 {
@@ -120,7 +120,7 @@ namespace LFAProject
                 }
             }
 
-            //if (node.Token == "|")
+            
             {
                 if (grammar.Dequeue().ToString() != node.Token)
                 {
@@ -130,12 +130,12 @@ namespace LFAProject
             else if (node.Token != "·")
             {
 
-            }*/
+            }
 
-            /* now recur on right child */
+            
             InOrderAndCompare(node.right, grammar, ref error);
             
             return;
-        }
+        }*/
     }
 }

@@ -16,7 +16,9 @@ namespace LFAProject
     {
         private readonly FileClass fileClass = new FileClass();
         Malgorithm malgorithmgg = new Malgorithm();
+        CheckGrammar checkGramar = new CheckGrammar();
         string error = string.Empty;
+        BTreeNode node = new BTreeNode();
         public Form1()
         {
             InitializeComponent();
@@ -24,7 +26,12 @@ namespace LFAProject
 
         private void button1_Click(object sender, EventArgs e)
         {
-            //malgorithmgg.FillRETree();
+            //BTreeNode ErrorsTree = malgorithmgg.FillRETree("E");
+            //BTreeNode SetsTree = malgorithmgg.FillRETree("S");            
+            //BTreeNode TokensTree = malgorithmgg.FillRETree("T");
+            //BTreeNode ActionsTree = malgorithmgg.FillRETree("A");
+            
+
             openFileDialog1.Filter = "Text|*.txt|All|*.*";
 
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
@@ -40,7 +47,8 @@ namespace LFAProject
                 }
                 else
                 {
-                    fileClass.ReadGrammar(openFileDialog1.FileName, ref error, malgorithmgg.FillRETree());
+                    checkGramar.CompareGrammar(openFileDialog1.FileName, ref error);
+                    //fileClass.ReadGrammar(openFileDialog1.FileName, ref error, malgorithmgg.FillRETree(""));
                     if (error != "success")
                     {
                         //Grammar is correct
