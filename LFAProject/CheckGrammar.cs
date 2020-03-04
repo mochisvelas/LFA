@@ -41,7 +41,7 @@ namespace LFAProject
                 while (!grammarFile.EndOfStream && RemoveUnwantedChars(grammarFile.ReadLine()) != "ACTIONS")
                 {
                     cont++;
-                    if (!TokensRegex.IsMatch(RemoveUnwantedChars(grammarFile.ReadLine())))
+                    if (!grammarFile.EndOfStream && !TokensRegex.IsMatch(RemoveUnwantedChars(grammarFile.ReadLine())))
                     {
                         error = "Error en token en la línea " + cont;
                     }
@@ -111,6 +111,10 @@ namespace LFAProject
                     {
                         error = "Error en la línea " + cont + ", se esperaba al menos un ERROR";
                     }
+                    else
+                    {
+                        error = "success";
+                    }
                 }
 
                 while (grammarFile.EndOfStream != true)
@@ -119,6 +123,10 @@ namespace LFAProject
                     if (!ErrorsRegex.IsMatch(RemoveUnwantedChars(grammarFile.ReadLine())))
                     {
                         error = "Error en error en la línea " + cont;
+                    }
+                    else
+                    {
+                        error = "success";
                     }
                 }
             }
@@ -132,26 +140,30 @@ namespace LFAProject
         public string RemoveUnwantedChars(string grammar)
         {
             int index = 0;
-            while (index != -1)
+            if (grammar != null)
             {
-                index = grammar.IndexOf(" ");
-                if (index != -1)
-                    grammar = grammar.Remove(index, 1);
+                while (index != -1)
+                {
+                    index = grammar.IndexOf(" ");
+                    if (index != -1)
+                        grammar = grammar.Remove(index, 1);
+                }
+                index = 0;
+                while (index != -1)
+                {
+                    index = grammar.IndexOf("\r");
+                    if (index != -1)
+                        grammar = grammar.Remove(index, 1);
+                }
+                index = 0;
+                while (index != -1)
+                {
+                    index = grammar.IndexOf("\t");
+                    if (index != -1)
+                        grammar = grammar.Remove(index, 1);
+                }
+                return grammar;
             }
-            index = 0;
-            while (index != -1)
-            {
-                index = grammar.IndexOf("\r");
-                if (index != -1)
-                    grammar = grammar.Remove(index, 1);
-            }
-            index = 0;
-            while (index != -1)
-            {
-                index = grammar.IndexOf("\t");
-                if (index != -1)
-                    grammar = grammar.Remove(index, 1);
-            }            
             return grammar;
         }
     }
