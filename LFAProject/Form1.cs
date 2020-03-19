@@ -26,8 +26,8 @@ namespace LFAProject
 
         private void button1_Click(object sender, EventArgs e)
         {
-            BTreeNode SetsTree = malgorithmgg.FillRETree("S");
             BTreeNode ErrorsTree = malgorithmgg.FillRETree("E");
+            BTreeNode SetsTree = malgorithmgg.FillRETree("S");
             BTreeNode ActionsTree = malgorithmgg.FillRETree("A");
             BTreeNode TokensTree = malgorithmgg.FillRETree("T");            
             
