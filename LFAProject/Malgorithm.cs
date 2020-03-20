@@ -7,24 +7,16 @@ using System.Threading.Tasks;
 namespace LFAProject
 {
     class Malgorithm
-    {
-        static string stERROR = "((((E·R)·R)·O)·R)";
-        string SetsRegex = @"((S·E·T·S·/n+·identifier·=·('·AZ·'·.·.·'·AZ·'|'·az·'·.·.·'·az·'|'·09·'·.·.·'·09·'|C·H·R·\(·09+·\)·.·.·C·H·R·\(·09+·\)|'·sym·')·((\+·('·AZ·'·.·.·'·AZ·'|'·az·'·.·.·'·az·'|'·09·'·.·.·'·09·'|C·H·R·\(·09+·\)·.·.·C·H·R·\(·09+·\)|'·sym·'))*)·/n+)?)·#";
+    {        
+        string SetsRegex = @"((S·E·T·S·\n+·[A-Z]+·=)·('·[A-Z]·'·.·.·'·[A-Z]·'|'·[a-z]·'·.·.·'·[a-z]·'|'·[0-9]·'·.·.·'·[0-9]·'|C·H·R·\(·[0-9]+·\)·.·.·C·H·R·\(·[0-9]+·\)|'·[sym]·')·((\+·('·[A-Z]·'·.·.·'·[A-Z]·'|'·[a-z]·'·.·.·'·[a-z]·'|'·[0-9]·'·.·.·'·[0-9]·'|C·H·R·\(·[0-9]+·\)·.·.·C·H·R·\(·[0-9]+·\)|'·[sym]·'))*)·\n+)?";
         string TokensRegex = @"(T·O·K·E·N·S·/n·(T·O·K·E·N·blnkspc+·09+·=·('·sym·'(·('·sym·')+)|('·AZ·')+|'·(\?|\+|\(|\))·'|'·(\?|\+|\(|\))·'·'·(\?|\+|\(|\))·'|(AZ·(·(\?|\+)?))+|('·(quote|')·'·AZ·'·(quote|')·')·((\|·'·(quote|')·'·AZ·'·(quote|')·')*)|AZ·\(·AZ·\|·AZ·\)·(·(\*|\?)?)))·((/n·T·O·K·E·N·blnkspc+·09+·=·('·sym·'(·('·sym·')+)|('·AZ·')+|'·(\?|\+|\(|\))·'|'·(\?|\+|\(|\))·'·'·(\?|\+|\(|\))·'|(AZ·(·(\?|\+)?))+|('·(quote|')·'·AZ+·'·(quote|')·')·((\|·'·(quote|')·'·AZ·'·(quote|')·')*)|AZ+·\(·AZ·\|·AZ·\)·(·(\*|\?)?)))*)·{·R·E·S·E·R·V·A·D·A·S·\(·\)·})·#";
-        string ActionsRegex = @"(A·C·T·I·O·N·S·(R·E·S·E·R·V·A·D·A·S·\(·\)·{·(09+·=·'·AZ+·')·(/n·09+·=·'·AZ·')·})·((/n·AZ·\(·\)·{·(09+·=·'·AZ+·')·(/n·09+·=·'·AZ·')·})*))·#";
-        /*Queue<char> ErrorrsRegex = new Queue<char>(@"AZ·E·R·R·O·R·=·09+(·(/n·AZ·E·R·R·O·R·=·09+)*)".ToCharArray());*/
-        /*Queue<char> ErrorrsRegex = new Queue<char>((@"(((AZ+·" + stERROR + @")·=)·09+)·((/n·(((AZ+·" + stERROR + @")·=)·09+))*)").ToCharArray());*/
-        //Queue<char> ErrorrsRegex = new Queue<char>((@"(AZ+·E·R·R·O·R·=·09+)·((/n·AZ+·E·R·R·O·R·=·09+)*)").ToCharArray());
-        //string ErrorrsRegex = @"([A-Z]+·E·R·R·O·R·=·[0-9]+)·((\n·[A-Z]+·E·R·R·O·R·=·[0-9]+)*)";
-        string ErrorrsRegex = @"([A-Z]+·E·R·R·O·R·=·[0-9]+)·(\n·[A-Z]+·E·R·R·O·R·=·[0-9]+)*";
-        string ggg = @"(((AZ+·" + stERROR + @")·=)·09+)·((/n·(((AZ+·" + stERROR + @")·=)·09+))*)";
-        Queue<char> eg = new Queue<char>("(a·b·c·d|a·c·d|c·d)·#".ToCharArray());        
-        List<string> TerminalSigns = new List<string> { "S", "E", "T", "S", "i", "d", "A", "[A-Z]", ".", "a", "z", "[0-9]", @"\n", "/", " ", @"\t", "=", "#", "'", "a", "b", "c", "s", "y", "m", "b", "o", "l", "C", "H", "R", "e","   ", "f", "r", @"\+","O","K","N","V","q","o","u","t","b","l","s","k","n","p","D" };
+        string ActionsRegex = @"(A·C·T·I·O·N·S·(R·E·S·E·R·V·A·D·A·S·\(·\)·{·(09+·=·'·AZ+·')·(/n·09+·=·'·AZ·')·})·((/n·AZ·\(·\)·{·(09+·=·'·AZ+·')·(/n·09+·=·'·AZ·')·})*))·#";        
+        string ErrorrsRegex = @"([A-Z]+·E·R·R·O·R·=·[0-9]+)·((\n·[A-Z]+·E·R·R·O·R·=·[0-9]+)*)";
+        List<string> TerminalSigns = new List<string> { "S", "E", "T", "S","A", "C","I","O","N","R","K","H","V","D","[A-Z]", "[a-z]", "[sym]", ".","[0-9]", @"\n", "[quote]", "[blnkspc]", @"\t", @"\(", @"\)", "=", "#", "'", @"\+"};
         List<string> OperatorSigns = new List<string> { "+", "(", ")", "[", "]", "?", "*", "|", "·"};
         Stack<string> TokenStack = new Stack<string>();
         Stack<BTreeNode> BTreeStack = new Stack<BTreeNode>();
-        Dictionary<string, int> dicPrecedence = new Dictionary<string, int> { /*{@"\", 7},*/ {"[", 6 },{"]", 6 }, {"(", 5}, {")", 5}, {"+", 4}, {"?", 4}, {"*", 4},
-        {"·", 3}, {"^", 2}, {"$", 2}, {"|", 1}};
+        Dictionary<string, int> dicPrecedence = new Dictionary<string, int> {{ "(", 5 }, { ")", 5 }, { "+", 4 }, { "?", 4 }, { "*", 4 }, { "·", 3 }, { "^", 2 }, { "$", 2 }, { "|", 1 } };
                 
         public BTreeNode FillRETree(string section) 
         {
@@ -147,7 +139,7 @@ namespace LFAProject
                         temp.left = BTreeStack.Pop();
                         temp.left.parentNode = temp;
                         BTreeStack.Push(temp);
-                        if (TokenStack.Count() != 0)
+                        if (TokenStack.Count() != 0 && TokenStack.Peek() != "|" && TokenStack.Peek() != "·")
                         {
                             TokenStack.Pop();
                         }                                            
@@ -165,7 +157,7 @@ namespace LFAProject
                         opNode.left = BTreeStack.Pop();
                         opNode.left.parentNode = opNode;
                         BTreeStack.Push(opNode);
-                        if (TokenStack.Peek() == "(") 
+                        if (TokenStack.Count() != 0 && TokenStack.Peek() == "(")  
                         {
                             TokenStack.Pop();
                         }
