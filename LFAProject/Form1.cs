@@ -27,9 +27,9 @@ namespace LFAProject
         private void button1_Click(object sender, EventArgs e)
         {
             BTreeNode SetsTree = malgorithmgg.FillRETree("S");
+            BTreeNode TokensTree = malgorithmgg.FillRETree("T");
             BTreeNode ErrorsTree = malgorithmgg.FillRETree("E");            
-            BTreeNode ActionsTree = malgorithmgg.FillRETree("A");
-            BTreeNode TokensTree = malgorithmgg.FillRETree("T");            
+            BTreeNode ActionsTree = malgorithmgg.FillRETree("A");                        
             
 
             openFileDialog1.Filter = "Text|*.txt|All|*.*";

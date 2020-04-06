@@ -9,10 +9,10 @@ namespace LFAProject
     class Malgorithm
     {        
         string SetsRegex = @"((S·E·T·S·\n+·[A-Z]+·=)·('·[A-Z]·'·.·.·'·[A-Z]·'|'·[a-z]·'·.·.·'·[a-z]·'|'·[0-9]·'·.·.·'·[0-9]·'|C·H·R·\(·[0-9]+·\)·.·.·C·H·R·\(·[0-9]+·\)|'·[sym]·')·((\+·('·[A-Z]·'·.·.·'·[A-Z]·'|'·[a-z]·'·.·.·'·[a-z]·'|'·[0-9]·'·.·.·'·[0-9]·'|C·H·R·\(·[0-9]+·\)·.·.·C·H·R·\(·[0-9]+·\)|'·[sym]·'))*)·\n+)?";
-        string TokensRegex = @"(T·O·K·E·N·S·/n·(T·O·K·E·N·blnkspc+·09+·=·('·sym·'(·('·sym·')+)|('·AZ·')+|'·(\?|\+|\(|\))·'|'·(\?|\+|\(|\))·'·'·(\?|\+|\(|\))·'|(AZ·(·(\?|\+)?))+|('·(quote|')·'·AZ·'·(quote|')·')·((\|·'·(quote|')·'·AZ·'·(quote|')·')*)|AZ·\(·AZ·\|·AZ·\)·(·(\*|\?)?)))·((/n·T·O·K·E·N·blnkspc+·09+·=·('·sym·'(·('·sym·')+)|('·AZ·')+|'·(\?|\+|\(|\))·'|'·(\?|\+|\(|\))·'·'·(\?|\+|\(|\))·'|(AZ·(·(\?|\+)?))+|('·(quote|')·'·AZ+·'·(quote|')·')·((\|·'·(quote|')·'·AZ·'·(quote|')·')*)|AZ+·\(·AZ·\|·AZ·\)·(·(\*|\?)?)))*)·{·R·E·S·E·R·V·A·D·A·S·\(·\)·})·#";
+        string TokensRegex = @"T·O·K·E·N·S·\n·(T·O·K·E·N·[blnkspc]+·[0-9]+·=·('·[sym]·'·(('·[sym]·')+)|('·[A-Z]·')+|'·(\?|\+|\(|\))·'|'·(\?|\+|\(|\))·'·'·(\?|\+|\(|\))·'|([A-Z]·((\?|\+)?))+|('·([quote]|')·'·[A-Z]+·'·([quote]|')·')·((\|·'·([quote]|')·'·[A-Z]+·'·([quote]|')·')*)|[A-Z]+·\(·[A-Z]+·\|·[A-Z]+·\)·((\*|\?)?)))·((\n·T·O·K·E·N·[blnkspc]+·[0-9]+·=·('·[sym]·'·(('·[sym]·')+)|('·[A-Z]·')+|'·(\?|\+|\(|\))·'|'·(\?|\+|\(|\))·'·'·(\?|\+|\(|\))·'|([A-Z]·((\?|\+)?))+|('·([quote]|')·'·[A-Z]+·'·([quote]|')·')·((\|·'·([quote]|')·'·[A-Z]+·'·([quote]|')·')*)|[A-Z]+·\(·[A-Z]+·\|·[A-Z]+·\)·((\*|\?)?)))*)·{·R·E·S·E·R·V·A·D·A·S·\(·\)·}";
         string ActionsRegex = @"(A·C·T·I·O·N·S·(R·E·S·E·R·V·A·D·A·S·\(·\)·{·(09+·=·'·AZ+·')·(/n·09+·=·'·AZ·')·})·((/n·AZ·\(·\)·{·(09+·=·'·AZ+·')·(/n·09+·=·'·AZ·')·})*))·#";        
         string ErrorrsRegex = @"([A-Z]+·E·R·R·O·R·=·[0-9]+)·((\n·[A-Z]+·E·R·R·O·R·=·[0-9]+)*)";
-        List<string> TerminalSigns = new List<string> { "S", "E", "T", "S","A", "C","I","O","N","R","K","H","V","D","[A-Z]", "[a-z]", "[sym]", ".","[0-9]", @"\n", "[quote]", "[blnkspc]", @"\t", @"\(", @"\)", "=", "#", "'", @"\+"};
+        List<string> TerminalSigns = new List<string> { "S", "E", "T", "S","A", "C","I","O","N","R","K","H","V","D","[A-Z]", "[a-z]", "[sym]", ".","[0-9]", @"\n", "[quote]", "[blnkspc]", @"\t", @"\(", @"\)", "=", "#", "'", @"\+", @"\?", @"\*", @"\|"};
         List<string> OperatorSigns = new List<string> { "+", "(", ")", "[", "]", "?", "*", "|", "·"};
         Stack<string> TokenStack = new Stack<string>();
         Stack<BTreeNode> BTreeStack = new Stack<BTreeNode>();
@@ -93,28 +93,8 @@ namespace LFAProject
             {
                 string Token = Tokens.Dequeue();
                 if (TerminalSigns.Contains(Token))
-                {
-                    BTreeNode treeNode;
-                    /*if (Token != "#"  && TerminalSigns.Contains(Tokens.Peek().ToString()))
-                    {
-                        while (TerminalSigns.Contains(Tokens.Peek().ToString()))
-                        {
-                            Token += Tokens.Dequeue().ToString();
-                        }
-                        treeNode = new BTreeNode(Token);
-                        BTreeStack.Push(treeNode);
-                    }
-                    else if (Token == @"\")
-                    {
-                        Token += Tokens.Dequeue().ToString();
-                        treeNode = new BTreeNode(Token);
-                        BTreeStack.Push(treeNode);
-                    }*/
-                    //else
-                    //{
-                        treeNode = new BTreeNode(Token);
-                        BTreeStack.Push(treeNode);
-                    //}                                                            
+                {                    
+                    BTreeStack.Push(new BTreeNode(Token));                                                                              
                 }                                
                 else if (Token == "(")
                 {
@@ -138,12 +118,9 @@ namespace LFAProject
                         temp.right.parentNode = temp;
                         temp.left = BTreeStack.Pop();
                         temp.left.parentNode = temp;
-                        BTreeStack.Push(temp);
-                        if (TokenStack.Count() != 0 && TokenStack.Peek() != "|" && TokenStack.Peek() != "·")
-                        {
-                            TokenStack.Pop();
-                        }                                            
-                    }                             
+                        BTreeStack.Push(temp);                                                                    
+                    }
+                    TokenStack.Pop();
                 }
                 else if (OperatorSigns.Contains(Token))
                 {
@@ -156,19 +133,15 @@ namespace LFAProject
                         }
                         opNode.left = BTreeStack.Pop();
                         opNode.left.parentNode = opNode;
-                        BTreeStack.Push(opNode);
-                        if (TokenStack.Count() != 0 && TokenStack.Peek() == "(")  
-                        {
-                            TokenStack.Pop();
-                        }
+                        BTreeStack.Push(opNode);                        
                     }
                     else if (TokenStack.Count() != 0 && TokenStack.Peek() != "(" && HasMinorPrecedence(Token))
-                    {                        
-                        BTreeNode temp = new BTreeNode(TokenStack.Pop());
+                    {
                         if (BTreeStack.Count() < 2)
                         {
                             return null;
                         }
+                        BTreeNode temp = new BTreeNode(TokenStack.Pop());                        
                         temp.right = BTreeStack.Pop();
                         temp.right.parentNode = temp;
                         temp.left = BTreeStack.Pop();
@@ -176,7 +149,8 @@ namespace LFAProject
                         BTreeStack.Push(temp);
                         TokenStack.Push(Token);
                     }
-                    else if (Token != "*" && Token != "?" && Token != "+")
+
+                    if (Token != "*" && Token != "?" && Token != "+")
                     {
                         TokenStack.Push(Token);
                     }
