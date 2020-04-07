@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace LFAProject
 {
-    class DFA
+    class Tools
     {
 
     }

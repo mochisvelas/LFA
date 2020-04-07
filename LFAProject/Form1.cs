@@ -17,8 +17,8 @@ namespace LFAProject
         private readonly FileClass fileClass = new FileClass();
         Malgorithm malgorithmgg = new Malgorithm();
         CheckGrammar checkGramar = new CheckGrammar();
-        string error = string.Empty;
-        BTreeNode node = new BTreeNode();
+        DFA genarateDFA = new DFA();
+        string error = string.Empty;        
         public Form1()
         {
             InitializeComponent();
@@ -47,11 +47,14 @@ namespace LFAProject
                 }
                 else
                 {
-                    checkGramar.CompareGrammar(openFileDialog1.FileName, ref error);
-                    //fileClass.ReadGrammar(openFileDialog1.FileName, ref error, malgorithmgg.FillRETree(""));
+                    string selectedFileName = openFileDialog1.FileName;
+                    checkGramar.CompareGrammar(selectedFileName, ref error);                    
                     if (error == "success")
                     {
                         MessageBox.Show("Gramática correcta", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        Form2 DFAform = new Form2();
+                        DFAform.GetFileName(selectedFileName);
+                        DFAform.Show();
                     }
                     else
                     {
