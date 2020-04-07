@@ -31,17 +31,114 @@ namespace LFAProject
             return addedTSigns;
         }
 
-        public string trimText(string FileName)
+        public Queue<string> getRegex(string FileName, List<string> TSigns) //validate that if TSings is empty, dont remove spaces in certain tokens and remove all functions
         {
-            string trimmedText = string.Empty;
+            List<string> tokens = new List<string>();
             StreamReader line = new StreamReader(FileName);
-            while (!trimmedText.Contains("ACTIONS"))
+            string readLine = line.ReadLine();
+            while (!readLine.Contains("TOKENS"))
             {
-                trimmedText += line.ReadLine();
+                readLine = line.ReadLine();
             }
+            while (!readLine.Contains("ACTIONS"))
+            {
+                if (!readLine.Equals("") && !readLine.Contains("TOKENS"))
+                {
+                    int index = readLine.IndexOf("=");
+                    if (index > 0)
+                        readLine = tools.RemoveUnwantedChars(readLine.Substring(index + 1));
+                    if (readLine.Contains("RESERVADAS"))
+                    {
+                        readLine = tools.RemoveUnwantedChars(readLine.Replace("{RESERVADAS()}", ""));
+                    }
+                    tokens.Add(readLine);
+                }
+                readLine = line.ReadLine();
+            }
+            List<string> TokenList = createRegex(tokens, TSigns);
+            Queue<string> TokenQ = new Queue<string>(TokenList);
+            return TokenQ;
+        }
 
-            trimmedText = tools.RemoveUnwantedChars(trimmedText);
-            return trimmedText;
+        public List<string> createRegex(List<string> tokens, List<string> TSigns) 
+        {
+            Queue<string> fixedTokens = new Queue<string>();
+            foreach (var token in tokens)
+            {
+                Queue<string> actualToken = new Queue<string>();
+                Queue<char> regexQ = new Queue<char>(token.ToCharArray());
+                while (regexQ.Count() != 0)
+                {
+                    string chr = regexQ.Dequeue().ToString();
+                    if (chr == "'" && regexQ.Peek().ToString().Equals("'"))
+                    {
+                        do
+                        {
+                            chr += regexQ.Dequeue().ToString();
+                        } while (!chr.Equals("\'\'\'"));
+                        actualToken.Enqueue(chr);
+                    }
+                    else if (chr == "'")
+                    {
+                        do
+                        {
+                            chr += regexQ.Dequeue().ToString();
+                        } while (chr.Count(c => c == '\'') != 2);
+                        actualToken.Enqueue(chr);
+                    }
+                    else if (chr.Any(x => char.IsLetter(x)) && TSigns.Count != 0)
+                    {
+                        do
+                        {
+                            chr += regexQ.Dequeue().ToString();
+                        } while (!TSigns.Contains(chr));
+                        actualToken.Enqueue(chr);
+                    }
+                    else
+                    {
+                        actualToken.Enqueue(chr);
+                    }
+                }
+                if (actualToken.Count >= 2)
+                { 
+                    if (actualToken.Contains("|"))
+                    {
+                        fixedTokens.Enqueue("(");
+                        while (actualToken.Count != 0)
+                        {
+                            string insert = actualToken.Dequeue();
+                            fixedTokens.Enqueue(insert);
+                            if (actualToken.Count != 0 && insert != "|" && insert != "(" && actualToken.Peek() != "*" && actualToken.Peek() != "|" && actualToken.Peek() != ")")
+                            {
+                                fixedTokens.Enqueue("·");
+                            }
+                        }
+                        fixedTokens.Enqueue(")");
+                        fixedTokens.Enqueue("|");
+                    }
+                    else
+                    {
+                        while (actualToken.Count != 0)
+                        {
+                            string insert = actualToken.Dequeue();
+                            fixedTokens.Enqueue(insert);
+                            if (actualToken.Count !=0 && insert != "|" && insert != "(" && actualToken.Peek() != "*" && actualToken.Peek() != "|" && actualToken.Peek() != ")")
+                            {
+                                fixedTokens.Enqueue("·");
+                            }
+                        }
+                        fixedTokens.Enqueue("|");
+                    }
+                }
+                else
+                {
+                    fixedTokens.Enqueue(actualToken.Dequeue());
+                    fixedTokens.Enqueue("|");
+                }
+            }
+            List<string> fixedTokensList = fixedTokens.ToList<string>();
+            fixedTokensList.RemoveAt(fixedTokensList.Count - 1);
+            return fixedTokensList;
         }
         
     }

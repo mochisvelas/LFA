@@ -37,7 +37,7 @@ namespace LFAProject
         private void button1_Click(object sender, EventArgs e)
         {
             List<string> addedTSigns = dfa.TSigns(fileName);
-            string regex = dfa.trimText(fileName);
+            Queue<string> Tokens = dfa.getRegex(fileName, addedTSigns);
         }
     }
 }
