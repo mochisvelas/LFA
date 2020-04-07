@@ -7,3 +7,4 @@ C:\VSprojects\LFAProject\LFAProject\obj\Debug\LFAProject.csproj.GenerateResource
 C:\VSprojects\LFAProject\LFAProject\obj\Debug\LFAProject.exe
 C:\VSprojects\LFAProject\LFAProject\obj\Debug\LFAProject.pdb
 C:\VSprojects\LFAProject\LFAProject\obj\Debug\LFAProject.Form1.resources
+C:\VSprojects\LFAProject\LFAProject\obj\Debug\LFAProject.Form2.resources

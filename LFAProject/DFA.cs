@@ -9,17 +9,40 @@ namespace LFAProject
 {
     class DFA
     {
-        string trimmedText = string.Empty;
+        Tools tools = new Tools();
 
-        public void trimText(string FileName)
+        public List<string> TSigns(string FileName)
         {
+            List<string> addedTSigns = new List<string>();
             StreamReader line = new StreamReader(FileName);
-            do
+            string readLine = line.ReadLine();
+            while (!readLine.Contains("TOKENS"))
             {
-                trimmedText += line.ReadLine();
-            } while (!trimmedText.Contains("ACTIONS"));
+                if (!readLine.Contains("SETS") && !readLine.Equals(""))
+                {                    
+                    int index = readLine.IndexOf("=");
+                    if (index > 0)
+                        readLine = tools.RemoveUnwantedChars(readLine.Substring(0, index));
+                    addedTSigns.Add(readLine);
+                }
+                readLine = line.ReadLine();
+            }
+            
+            return addedTSigns;
         }
 
+        public string trimText(string FileName)
+        {
+            string trimmedText = string.Empty;
+            StreamReader line = new StreamReader(FileName);
+            while (!trimmedText.Contains("ACTIONS"))
+            {
+                trimmedText += line.ReadLine();
+            }
 
+            trimmedText = tools.RemoveUnwantedChars(trimmedText);
+            return trimmedText;
+        }
+        
     }
 }

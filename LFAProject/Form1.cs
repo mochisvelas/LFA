@@ -26,10 +26,10 @@ namespace LFAProject
 
         private void button1_Click(object sender, EventArgs e)
         {
-            BTreeNode SetsTree = malgorithmgg.FillRETree("S");
-            BTreeNode TokensTree = malgorithmgg.FillRETree("T");
-            BTreeNode ErrorsTree = malgorithmgg.FillRETree("E");            
-            BTreeNode ActionsTree = malgorithmgg.FillRETree("A");                        
+            //BTreeNode SetsTree = malgorithmgg.FillRETree("S");
+            //BTreeNode TokensTree = malgorithmgg.FillRETree("T");
+            //BTreeNode ErrorsTree = malgorithmgg.FillRETree("E");
+            //BTreeNode ActionsTree = malgorithmgg.FillRETree("A");                        
             
 
             openFileDialog1.Filter = "Text|*.txt|All|*.*";
@@ -48,13 +48,16 @@ namespace LFAProject
                 else
                 {
                     string selectedFileName = openFileDialog1.FileName;
+                    Form2 DFAform = new Form2();
+                    DFAform.GetFileName(selectedFileName);
+                    DFAform.Show();
                     checkGramar.CompareGrammar(selectedFileName, ref error);                    
                     if (error == "success")
                     {
                         MessageBox.Show("Gramática correcta", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        Form2 DFAform = new Form2();
-                        DFAform.GetFileName(selectedFileName);
-                        DFAform.Show();
+                        //Form2 DFAform = new Form2();
+                        //DFAform.GetFileName(selectedFileName);
+                        //DFAform.Show();
                     }
                     else
                     {

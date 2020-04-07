@@ -12,6 +12,7 @@ namespace LFAProject
 {
     public partial class Form2 : Form
     {
+        DFA dfa = new DFA();
         string fileName;
         public Form2()
         {
@@ -31,6 +32,12 @@ namespace LFAProject
         public void GetFileName(string FileName)
         {
             fileName = FileName;
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            List<string> addedTSigns = dfa.TSigns(fileName);
+            string regex = dfa.trimText(fileName);
         }
     }
 }
