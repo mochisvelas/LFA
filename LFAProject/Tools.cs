@@ -38,6 +38,32 @@ namespace LFAProject
             return text;
         }
 
-
+        public Queue<string> TokenizeRegex(string regex)
+        {
+            Queue<string> TokenizedRegexQ = new Queue<string>();
+            Queue<char> regexQ = new Queue<char>(regex.ToCharArray());
+            while (regexQ.Count() != 0)
+            {
+                string token = regexQ.Dequeue().ToString();
+                if (token == "[")
+                {
+                    do
+                    {
+                        token += regexQ.Dequeue().ToString();
+                    } while (!token.Contains("]"));
+                    TokenizedRegexQ.Enqueue(token);
+                }
+                else if (token == @"\")
+                {
+                    token += regexQ.Dequeue().ToString();
+                    TokenizedRegexQ.Enqueue(token);
+                }
+                else
+                {
+                    TokenizedRegexQ.Enqueue(token);
+                }
+            }
+            return TokenizedRegexQ;
+        }
     }
 }

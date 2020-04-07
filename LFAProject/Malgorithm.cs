@@ -7,7 +7,8 @@ using System.Threading.Tasks;
 namespace LFAProject
 {
     class Malgorithm
-    {        
+    {
+        Tools tools = new Tools();
         string SetsRegex = @"((S·E·T·S·\n+·[A-Z]+·=)·('·[A-Z]·'·.·.·'·[A-Z]·'|'·[a-z]·'·.·.·'·[a-z]·'|'·[0-9]·'·.·.·'·[0-9]·'|C·H·R·\(·[0-9]+·\)·.·.·C·H·R·\(·[0-9]+·\)|'·[sym]·')·((\+·('·[A-Z]·'·.·.·'·[A-Z]·'|'·[a-z]·'·.·.·'·[a-z]·'|'·[0-9]·'·.·.·'·[0-9]·'|C·H·R·\(·[0-9]+·\)·.·.·C·H·R·\(·[0-9]+·\)|'·[sym]·'))*)·\n+)?";
         string TokensRegex = @"T·O·K·E·N·S·\n·(T·O·K·E·N·[blnkspc]+·[0-9]+·=·('·[sym]·'·(('·[sym]·')+)|('·[A-Z]·')+|'·(\?|\+|\(|\))·'|'·(\?|\+|\(|\))·'·'·(\?|\+|\(|\))·'|([A-Z]·((\?|\+)?))+|('·([quote]|')·'·[A-Z]+·'·([quote]|')·')·((\|·'·([quote]|')·'·[A-Z]+·'·([quote]|')·')*)|[A-Z]+·\(·[A-Z]+·\|·[A-Z]+·\)·((\*|\?)?)))·((\n·T·O·K·E·N·[blnkspc]+·[0-9]+·=·('·[sym]·'·(('·[sym]·')+)|('·[A-Z]·')+|'·(\?|\+|\(|\))·'|'·(\?|\+|\(|\))·'·'·(\?|\+|\(|\))·'|([A-Z]·((\?|\+)?))+|('·([quote]|')·'·[A-Z]+·'·([quote]|')·')·((\|·'·([quote]|')·'·[A-Z]+·'·([quote]|')·')*)|[A-Z]+·\(·[A-Z]+·\|·[A-Z]+·\)·((\*|\?)?)))*)·{·R·E·S·E·R·V·A·D·A·S·\(·\)·}";
         string ActionsRegex = @"(A·C·T·I·O·N·S·(R·E·S·E·R·V·A·D·A·S·\(·\)·{·(09+·=·'·AZ+·')·(/n·09+·=·'·AZ·')·})·((/n·AZ·\(·\)·{·(09+·=·'·AZ+·')·(/n·09+·=·'·AZ·')·})*))·#";        
@@ -26,53 +27,26 @@ namespace LFAProject
             //return CreateRETree(SetTokens);
             if (section == "S")
             {
-                return CreateRETree(TokenizeRegex(SetsRegex));
+                return CreateRETree(tools.TokenizeRegex(SetsRegex));
             }
             else if (section =="T")
             {
-                return CreateRETree(TokenizeRegex(TokensRegex));
+                return CreateRETree(tools.TokenizeRegex(TokensRegex));
             }
             else if (section == "A")
             {
-                return CreateRETree(TokenizeRegex(ActionsRegex));
+                return CreateRETree(tools.TokenizeRegex(ActionsRegex));
             }
             else if (section == "E")
             {
-                return CreateRETree(TokenizeRegex(ErrorrsRegex));
+                return CreateRETree(tools.TokenizeRegex(ErrorrsRegex));
             }
             else
             {
                 return null;
             }            
         }
-
-        public Queue<string> TokenizeRegex(string regex) 
-        {
-            Queue<string> TokenizedRegexQ = new Queue<string>();
-            Queue<char> regexQ = new Queue<char>(regex.ToCharArray());
-            while (regexQ.Count() != 0)            
-            {
-                string token = regexQ.Dequeue().ToString();
-                if (token == "[")
-                {
-                    do
-                    {
-                        token += regexQ.Dequeue().ToString();
-                    } while (!token.Contains("]"));
-                    TokenizedRegexQ.Enqueue(token);
-                }
-                else if (token == @"\")
-                {
-                    token += regexQ.Dequeue().ToString();
-                    TokenizedRegexQ.Enqueue(token);
-                }
-                else
-                {
-                    TokenizedRegexQ.Enqueue(token);
-                }
-            }
-            return TokenizedRegexQ;
-        }
+        
         public bool HasMinorPrecedence(string Token) 
         {
             dicPrecedence.TryGetValue(Token, out int tokenValue);
