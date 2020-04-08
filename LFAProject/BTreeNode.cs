@@ -139,10 +139,10 @@ namespace LFAProject
             return;
         }*/
 
-        public void GenerateFLN(BTreeNode root) 
+        public void Nullable(BTreeNode root) 
         {
-            GenerateFLN(root.left);
-            GenerateFLN(root.right);
+            Nullable(root.left);
+            Nullable(root.right);
             if (root.left == null && root.right == null)
             {
                 root.isNullable = false;
@@ -150,11 +150,23 @@ namespace LFAProject
             }
             else if (root.left != null && root.right != null)
             {
-
+                if (root.Token == "|")
+                {
+                    if (root.left.isNullable == true || root.right.isNullable == true)                    
+                        root.isNullable = true;                    
+                }
+                else if (root.Token == "·")
+                {
+                    if (root.left.isNullable == true && root.right.isNullable == true)                    
+                        root.isNullable = true;                    
+                }
             }
-            else
+            else if (root.left != null && root.right == null)
             {
-
+                if (root.Token == "*" || root.Token == "?")                
+                    root.isNullable = true;                
+                else                
+                    root.isNullable = false;                
             }
         }
     }

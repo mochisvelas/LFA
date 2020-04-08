@@ -13,6 +13,7 @@ namespace LFAProject
     public partial class Form2 : Form
     {
         Malgorithm malgorithm = new Malgorithm();
+        BTreeNode tree = new BTreeNode();
         DFA dfa = new DFA();        
         string fileName;
         string regex;
@@ -50,6 +51,7 @@ namespace LFAProject
             }
             Queue<string> TokenQ = new Queue<string>(Tokens);
             BTreeNode DFATree = malgorithm.CreateDFA(TokenQ, addedTSigns);
+            tree.Nullable(DFATree);
 
             PostOrder(DFATree);
         }
