@@ -17,6 +17,7 @@ namespace LFAProject
         DFA dfa = new DFA();        
         string fileName;
         string regex;
+        DataTable flTable = new DataTable();        
         public Form2()
         {
             InitializeComponent();
@@ -52,6 +53,14 @@ namespace LFAProject
             Queue<string> TokenQ = new Queue<string>(Tokens);
             BTreeNode DFATree = malgorithm.CreateDFA(TokenQ, addedTSigns);
             tree.Nullable(DFATree);
+            tree.FirstLast(DFATree);
+
+            flTable.Columns.Add("SÍMBOLO");
+            flTable.Columns.Add("FIRST");
+            flTable.Columns.Add("LAST");
+            flTable.Columns.Add("NULLABLE");
+            FirstLastTable(DFATree);
+            dataGridView1.DataSource = flTable;
 
             PostOrder(DFATree);
         }
@@ -64,6 +73,16 @@ namespace LFAProject
                 PostOrder(root.right);
                 regex += root.Token;
             }
+        }
+
+        private void FirstLastTable(BTreeNode root) 
+        {            
+            if (root != null)
+            {
+                FirstLastTable(root.left);
+                FirstLastTable(root.right);
+                flTable.Rows.Add(root.Token, string.Join(",", root.First), string.Join(",", root.Last), root.isNullable.ToString());
+            }            
         }
     }
 }

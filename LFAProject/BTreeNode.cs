@@ -13,9 +13,9 @@ namespace LFAProject
         public BTreeNode right, left;
         public bool isNullable;
         public int leafNumber;
-        public List<int> First;
-        public List<int> Last;
-        public List<int> Follow;
+        public List<int> First = new List<int>();
+        public List<int> Last = new List<int>();
+        public List<int> Follow = new List<int>();
         int cont = 0;
         public BTreeNode(string value) 
         {
@@ -141,74 +141,80 @@ namespace LFAProject
 
         public void Nullable(BTreeNode root) 
         {
-            Nullable(root.left);
-            Nullable(root.right);
-            if (root.left == null && root.right == null)
-            {                
-                root.isNullable = false;
-                root.leafNumber = cont++;
-                root.First.Add(cont);
-                root.Last.Add(cont);
-            }
-            else if (root.left != null && root.right != null)
+            if (root != null)
             {
-                if (root.Token == "|")
+                Nullable(root.left);
+                Nullable(root.right);
+                if (root.left == null && root.right == null)
                 {
-                    if (root.left.isNullable == true || root.right.isNullable == true)                    
-                        root.isNullable = true;                    
+                    root.isNullable = false;
+                    root.leafNumber = cont++;
+                    root.First.Add(cont);
+                    root.Last.Add(cont);
                 }
-                else if (root.Token == "·")
+                else if (root.left != null && root.right != null)
                 {
-                    if (root.left.isNullable == true && root.right.isNullable == true)                    
-                        root.isNullable = true;                    
+                    if (root.Token == "|")
+                    {
+                        if (root.left.isNullable == true || root.right.isNullable == true)
+                            root.isNullable = true;
+                    }
+                    else if (root.Token == "·")
+                    {
+                        if (root.left.isNullable == true && root.right.isNullable == true)
+                            root.isNullable = true;
+                    }
                 }
-            }
-            else if (root.left != null && root.right == null)
-            {
-                if (root.Token == "*" || root.Token == "?")                
-                    root.isNullable = true;                
-                else                
-                    root.isNullable = false;                
-            }
+                else if (root.left != null && root.right == null)
+                {
+                    if (root.Token == "*" || root.Token == "?")
+                        root.isNullable = true;
+                    else
+                        root.isNullable = false;
+                }
+            }            
         }
 
         public void FirstLast(BTreeNode root)
         {
-            FirstLast(root.left);
-            FirstLast(root.right);
-            if (root.left != null && root.right != null)
+            if (root != null)
             {
-                if (root.Token == "|")
+                FirstLast(root.left);
+                FirstLast(root.right);
+                if (root.left != null && root.right != null)
                 {
-                    root.First.AddRange(root.left.First);
-                    root.First.AddRange(root.right.First);
-                    root.Last.AddRange(root.left.Last);
-                    root.Last.AddRange(root.right.Last);
-                }
-                else if (root.Token == "·")
-                {
-                    if (root.left.isNullable == true)
+                    if (root.Token == "|")
                     {
                         root.First.AddRange(root.left.First);
-                        root.First.AddRange(root.right.First);                        
-                    }
-                    else
-                        root.First.AddRange(root.left.First);
-
-                    if (root.right.isNullable == true)
-                    {
+                        root.First.AddRange(root.right.First);
                         root.Last.AddRange(root.left.Last);
                         root.Last.AddRange(root.right.Last);
                     }
-                    else
-                        root.Last.AddRange(root.right.Last);
+                    else if (root.Token == "·")
+                    {
+                        if (root.left.isNullable == true)
+                        {
+                            root.First.AddRange(root.left.First);
+                            root.First.AddRange(root.right.First);
+                        }
+                        else
+                            root.First.AddRange(root.left.First);
+
+                        if (root.right.isNullable == true)
+                        {
+                            root.Last.AddRange(root.left.Last);
+                            root.Last.AddRange(root.right.Last);
+                        }
+                        else
+                            root.Last.AddRange(root.right.Last);
+                    }
                 }
-            }
-            else if (root.left != null && root.right == null)
-            {
-                root.First.AddRange(root.left.First);
-                root.Last.AddRange(root.left.Last);
-            }
+                else if (root.left != null && root.right == null)
+                {
+                    root.First.AddRange(root.left.First);
+                    root.Last.AddRange(root.left.Last);
+                }
+            }            
         }
     }
 }

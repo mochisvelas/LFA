@@ -62,6 +62,7 @@ namespace LFAProject
         public List<string> createRegex(List<string> tokens, List<string> TSigns) 
         {
             Queue<string> fixedTokens = new Queue<string>();
+            fixedTokens.Enqueue("(");
             foreach (var token in tokens)
             {
                 Queue<string> actualToken = new Queue<string>();
@@ -116,7 +117,7 @@ namespace LFAProject
                     fixedTokens.Enqueue(actualToken.Dequeue());
                     fixedTokens.Enqueue("|");
                 }
-            }
+            }            
             List<string> fixedTokensList = fixedTokens.ToList<string>();
             fixedTokensList.RemoveAt(fixedTokensList.Count - 1);
             return fixedTokensList;

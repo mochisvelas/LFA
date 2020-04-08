@@ -51,6 +51,9 @@ namespace LFAProject
         public BTreeNode CreateDFA(Queue<string> Tokens, List<string> TSigns) 
         {
             TerminalSigns.AddRange(TSigns);
+            Tokens.Enqueue(")");
+            Tokens.Enqueue("·");
+            Tokens.Enqueue("#");
             return CreateRETree(Tokens);
         }
         
