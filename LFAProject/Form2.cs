@@ -12,6 +12,7 @@ namespace LFAProject
 {
     public partial class Form2 : Form
     {
+        Malgorithm malgorithm = new Malgorithm();
         DFA dfa = new DFA();
         string fileName;
         public Form2()
@@ -37,7 +38,17 @@ namespace LFAProject
         private void button1_Click(object sender, EventArgs e)
         {
             List<string> addedTSigns = dfa.TSigns(fileName);
-            Queue<string> Tokens = dfa.getRegex(fileName, addedTSigns);
+            List<string> Tokens = dfa.getRegex(fileName, addedTSigns);
+            addedTSigns.Clear();
+            foreach (var token in Tokens)
+            {
+                if (!addedTSigns.Contains(token) && token != "*" && token != "|" && token != "(" && token != ")" && token != "·" && token != "+" && token != "?")
+                {
+                    addedTSigns.Add(token);
+                }
+            }
+            Queue<string> TokenQ = new Queue<string>(Tokens);
+            BTreeNode DFATree = malgorithm.CreateDFA(TokenQ, addedTSigns);
         }
     }
 }

@@ -46,6 +46,12 @@ namespace LFAProject
                 return null;
             }            
         }
+
+        public BTreeNode CreateDFA(Queue<string> Tokens, List<string> TSigns) 
+        {
+            TerminalSigns.AddRange(TSigns);
+            return CreateRETree(Tokens);
+        }
         
         public bool HasMinorPrecedence(string Token) 
         {
@@ -120,10 +126,8 @@ namespace LFAProject
                         temp.right.parentNode = temp;
                         temp.left = BTreeStack.Pop();
                         temp.left.parentNode = temp;
-                        BTreeStack.Push(temp);
-                        TokenStack.Push(Token);
+                        BTreeStack.Push(temp);                        
                     }
-
                     if (Token != "*" && Token != "?" && Token != "+")
                     {
                         TokenStack.Push(Token);
@@ -134,7 +138,6 @@ namespace LFAProject
                     return null;
                 }
             }
-
             while (TokenStack.Count() > 0)
             {
                 if (TokenStack.Peek() == "(")
@@ -152,7 +155,6 @@ namespace LFAProject
                 temp.left.parentNode = temp;
                 BTreeStack.Push(temp);
             }
-
             if (BTreeStack.Count() != 1)
             {
                 return null;

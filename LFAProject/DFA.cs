@@ -31,7 +31,7 @@ namespace LFAProject
             return addedTSigns;
         }
 
-        public Queue<string> getRegex(string FileName, List<string> TSigns) //validate that if TSings is empty, dont remove spaces in certain tokens and remove all functions
+        public List<string> getRegex(string FileName, List<string> TSigns) //validate that if TSings is empty, dont remove spaces in certain tokens and remove all functions
         {
             List<string> tokens = new List<string>();
             StreamReader line = new StreamReader(FileName);
@@ -55,9 +55,8 @@ namespace LFAProject
                 }
                 readLine = line.ReadLine();
             }
-            List<string> TokenList = createRegex(tokens, TSigns);
-            Queue<string> TokenQ = new Queue<string>(TokenList);
-            return TokenQ;
+            List<string> TokenList = createRegex(tokens, TSigns);            
+            return TokenList;
         }
 
         public List<string> createRegex(List<string> tokens, List<string> TSigns) 
@@ -108,7 +107,7 @@ namespace LFAProject
                         {
                             string insert = actualToken.Dequeue();
                             fixedTokens.Enqueue(insert);
-                            if (actualToken.Count != 0 && insert != "|" && insert != "(" && actualToken.Peek() != "*" && actualToken.Peek() != "|" && actualToken.Peek() != ")")
+                            if (actualToken.Count != 0 && insert != "|" && insert != "(" && actualToken.Peek() != "*" && actualToken.Peek() != "|" && actualToken.Peek() != ")" && actualToken.Peek() != "?" && actualToken.Peek() != "+")
                             {
                                 fixedTokens.Enqueue("·");
                             }
@@ -122,7 +121,7 @@ namespace LFAProject
                         {
                             string insert = actualToken.Dequeue();
                             fixedTokens.Enqueue(insert);
-                            if (actualToken.Count !=0 && insert != "|" && insert != "(" && actualToken.Peek() != "*" && actualToken.Peek() != "|" && actualToken.Peek() != ")")
+                            if (actualToken.Count !=0 && insert != "|" && insert != "(" && actualToken.Peek() != "*" && actualToken.Peek() != "|" && actualToken.Peek() != ")" && actualToken.Peek() != "?" && actualToken.Peek() != "+")
                             {
                                 fixedTokens.Enqueue("·");
                             }
