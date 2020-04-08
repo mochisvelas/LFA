@@ -13,8 +13,9 @@ namespace LFAProject
     public partial class Form2 : Form
     {
         Malgorithm malgorithm = new Malgorithm();
-        DFA dfa = new DFA();
+        DFA dfa = new DFA();        
         string fileName;
+        string regex;
         public Form2()
         {
             InitializeComponent();
@@ -34,7 +35,7 @@ namespace LFAProject
         {
             fileName = FileName;
         }
-
+        
         private void button1_Click(object sender, EventArgs e)
         {
             List<string> addedTSigns = dfa.TSigns(fileName);
@@ -49,6 +50,18 @@ namespace LFAProject
             }
             Queue<string> TokenQ = new Queue<string>(Tokens);
             BTreeNode DFATree = malgorithm.CreateDFA(TokenQ, addedTSigns);
+
+            PostOrder(DFATree);
+        }
+
+        private void PostOrder(BTreeNode root)
+        {            
+            if (root != null)
+            {                
+                PostOrder(root.left);                
+                PostOrder(root.right);
+                regex += root.Token;
+            }
         }
     }
 }

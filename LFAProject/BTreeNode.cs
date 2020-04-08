@@ -11,11 +11,12 @@ namespace LFAProject
         public string Token;
         public BTreeNode parentNode;
         public BTreeNode right, left;
-        //string inOrder = "";
-        //Queue<char> copyGrammar;
-        //int cont = 0;
-        //bool isGrammarCorrect = true;
-        //bool isParentOr = false;
+        public bool isNullable;
+        public int leafNumber;
+        public List<int> First;
+        public List<int> Last;
+        public List<int> Follow;
+        int cont = 0;
         public BTreeNode(string value) 
         {
             Token = value;
@@ -137,5 +138,24 @@ namespace LFAProject
             
             return;
         }*/
+
+        public void GenerateFLN(BTreeNode root) 
+        {
+            GenerateFLN(root.left);
+            GenerateFLN(root.right);
+            if (root.left == null && root.right == null)
+            {
+                root.isNullable = false;
+                root.leafNumber = cont++;                
+            }
+            else if (root.left != null && root.right != null)
+            {
+
+            }
+            else
+            {
+
+            }
+        }
     }
 }

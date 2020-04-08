@@ -13,20 +13,21 @@ namespace LFAProject
         string TokensRegex = @"T·O·K·E·N·S·\n·(T·O·K·E·N·[blnkspc]+·[0-9]+·=·('·[sym]·'·(('·[sym]·')+)|('·[A-Z]·')+|'·(\?|\+|\(|\))·'|'·(\?|\+|\(|\))·'·'·(\?|\+|\(|\))·'|([A-Z]·((\?|\+)?))+|('·([quote]|')·'·[A-Z]+·'·([quote]|')·')·((\|·'·([quote]|')·'·[A-Z]+·'·([quote]|')·')*)|[A-Z]+·\(·[A-Z]+·\|·[A-Z]+·\)·((\*|\?)?)))·((\n·T·O·K·E·N·[blnkspc]+·[0-9]+·=·('·[sym]·'·(('·[sym]·')+)|('·[A-Z]·')+|'·(\?|\+|\(|\))·'|'·(\?|\+|\(|\))·'·'·(\?|\+|\(|\))·'|([A-Z]·((\?|\+)?))+|('·([quote]|')·'·[A-Z]+·'·([quote]|')·')·((\|·'·([quote]|')·'·[A-Z]+·'·([quote]|')·')*)|[A-Z]+·\(·[A-Z]+·\|·[A-Z]+·\)·((\*|\?)?)))*)·{·R·E·S·E·R·V·A·D·A·S·\(·\)·}";
         string ActionsRegex = @"(A·C·T·I·O·N·S·(R·E·S·E·R·V·A·D·A·S·\(·\)·{·(09+·=·'·AZ+·')·(/n·09+·=·'·AZ·')·})·((/n·AZ·\(·\)·{·(09+·=·'·AZ+·')·(/n·09+·=·'·AZ·')·})*))·#";        
         string ErrorrsRegex = @"([A-Z]+·E·R·R·O·R·=·[0-9]+)·((\n·[A-Z]+·E·R·R·O·R·=·[0-9]+)*)";
-        List<string> TerminalSigns = new List<string> { "S", "E", "T", "S","A", "C","I","O","N","R","K","H","V","D","[A-Z]", "[a-z]", "[sym]", ".","[0-9]", @"\n", "[quote]", "[blnkspc]", @"\t", @"\(", @"\)", "=", "#", "'", @"\+", @"\?", @"\*", @"\|"};
+        List<string> TerminalSigns = new List<string> { "S", "E", "T", "S","A", "C","I","O","N","R","K","H","V","D","[A-Z]", "[a-z]", "[sym]", ".","[0-9]", @"\n", "[quote]", "[blnkspc]", @"\t", @"\(", @"\)", "=", "#", "'", @"\+", @"\?", @"\*", @"\|", "a", "b"};
         List<string> OperatorSigns = new List<string> { "+", "(", ")", "[", "]", "?", "*", "|", "·"};
         Stack<string> TokenStack = new Stack<string>();
         Stack<BTreeNode> BTreeStack = new Stack<BTreeNode>();
         Dictionary<string, int> dicPrecedence = new Dictionary<string, int> {{ "(", 5 }, { ")", 5 }, { "+", 4 }, { "?", 4 }, { "*", 4 }, { "·", 3 }, { "^", 2 }, { "$", 2 }, { "|", 1 } };
-                
+        //string eg = @"a|(a·b)|a|b|a";
+        
         public BTreeNode FillRETree(string section) 
-        {
-            //CreateRETree(eg);
+        {            
             //BTreeNode node = new BTreeNode();
             //string iOrder = node.InOrderTraversal(CreateRETree(SetTokens));
             //return CreateRETree(SetTokens);
             if (section == "S")
             {
+                //return CreateRETree(tools.TokenizeRegex(eg));
                 return CreateRETree(tools.TokenizeRegex(SetsRegex));
             }
             else if (section =="T")
@@ -115,18 +116,21 @@ namespace LFAProject
                         opNode.left.parentNode = opNode;
                         BTreeStack.Push(opNode);                        
                     }
-                    else if (TokenStack.Count() != 0 && TokenStack.Peek() != "(" && HasMinorPrecedence(Token))
+                    else if (TokenStack.Count() != 0)
                     {
-                        if (BTreeStack.Count() < 2)
+                        while (TokenStack.Count() != 0 && TokenStack.Peek() != "(" && HasMinorPrecedence(Token))
                         {
-                            return null;
-                        }
-                        BTreeNode temp = new BTreeNode(TokenStack.Pop());                        
-                        temp.right = BTreeStack.Pop();
-                        temp.right.parentNode = temp;
-                        temp.left = BTreeStack.Pop();
-                        temp.left.parentNode = temp;
-                        BTreeStack.Push(temp);                        
+                            if (BTreeStack.Count() < 2)
+                            {
+                                return null;
+                            }
+                            BTreeNode temp = new BTreeNode(TokenStack.Pop());
+                            temp.right = BTreeStack.Pop();
+                            temp.right.parentNode = temp;
+                            temp.left = BTreeStack.Pop();
+                            temp.left.parentNode = temp;
+                            BTreeStack.Push(temp);
+                        }                                                
                     }
                     if (Token != "*" && Token != "?" && Token != "+")
                     {

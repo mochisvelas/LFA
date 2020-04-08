@@ -99,35 +99,17 @@ namespace LFAProject
                     }
                 }
                 if (actualToken.Count >= 2)
-                { 
-                    if (actualToken.Contains("|"))
+                {                    
+                    while (actualToken.Count != 0)
                     {
-                        fixedTokens.Enqueue("(");
-                        while (actualToken.Count != 0)
+                        string insert = actualToken.Dequeue();
+                        fixedTokens.Enqueue(insert);
+                        if (actualToken.Count !=0 && insert != "|" && insert != "(" && actualToken.Peek() != "*" && actualToken.Peek() != "|" && actualToken.Peek() != ")" && actualToken.Peek() != "?" && actualToken.Peek() != "+")
                         {
-                            string insert = actualToken.Dequeue();
-                            fixedTokens.Enqueue(insert);
-                            if (actualToken.Count != 0 && insert != "|" && insert != "(" && actualToken.Peek() != "*" && actualToken.Peek() != "|" && actualToken.Peek() != ")" && actualToken.Peek() != "?" && actualToken.Peek() != "+")
-                            {
-                                fixedTokens.Enqueue("·");
-                            }
+                            fixedTokens.Enqueue("·");
                         }
-                        fixedTokens.Enqueue(")");
-                        fixedTokens.Enqueue("|");
-                    }
-                    else
-                    {
-                        while (actualToken.Count != 0)
-                        {
-                            string insert = actualToken.Dequeue();
-                            fixedTokens.Enqueue(insert);
-                            if (actualToken.Count !=0 && insert != "|" && insert != "(" && actualToken.Peek() != "*" && actualToken.Peek() != "|" && actualToken.Peek() != ")" && actualToken.Peek() != "?" && actualToken.Peek() != "+")
-                            {
-                                fixedTokens.Enqueue("·");
-                            }
-                        }
-                        fixedTokens.Enqueue("|");
-                    }
+                    }                    
+                    fixedTokens.Enqueue("|");                    
                 }
                 else
                 {
