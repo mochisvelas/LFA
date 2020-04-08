@@ -144,9 +144,11 @@ namespace LFAProject
             Nullable(root.left);
             Nullable(root.right);
             if (root.left == null && root.right == null)
-            {
+            {                
                 root.isNullable = false;
-                root.leafNumber = cont++;                
+                root.leafNumber = cont++;
+                root.First.Add(cont);
+                root.Last.Add(cont);
             }
             else if (root.left != null && root.right != null)
             {
@@ -167,6 +169,45 @@ namespace LFAProject
                     root.isNullable = true;                
                 else                
                     root.isNullable = false;                
+            }
+        }
+
+        public void FirstLast(BTreeNode root)
+        {
+            FirstLast(root.left);
+            FirstLast(root.right);
+            if (root.left != null && root.right != null)
+            {
+                if (root.Token == "|")
+                {
+                    root.First.AddRange(root.left.First);
+                    root.First.AddRange(root.right.First);
+                    root.Last.AddRange(root.left.Last);
+                    root.Last.AddRange(root.right.Last);
+                }
+                else if (root.Token == "·")
+                {
+                    if (root.left.isNullable == true)
+                    {
+                        root.First.AddRange(root.left.First);
+                        root.First.AddRange(root.right.First);                        
+                    }
+                    else
+                        root.First.AddRange(root.left.First);
+
+                    if (root.right.isNullable == true)
+                    {
+                        root.Last.AddRange(root.left.Last);
+                        root.Last.AddRange(root.right.Last);
+                    }
+                    else
+                        root.Last.AddRange(root.right.Last);
+                }
+            }
+            else if (root.left != null && root.right == null)
+            {
+                root.First.AddRange(root.left.First);
+                root.Last.AddRange(root.left.Last);
             }
         }
     }
