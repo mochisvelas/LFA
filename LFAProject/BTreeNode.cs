@@ -16,7 +16,7 @@ namespace LFAProject
         public List<int> First = new List<int>();
         public List<int> Last = new List<int>();
         public List<int> Follow = new List<int>();
-        int cont = 0;
+        public int cont = 0;
         public BTreeNode(string value) 
         {
             Token = value;

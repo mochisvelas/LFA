@@ -17,7 +17,9 @@ namespace LFAProject
         DFA dfa = new DFA();        
         string fileName;
         string regex;
-        DataTable flTable = new DataTable();        
+        DataTable firstLastTable = new DataTable();
+        DataTable followTable = new DataTable();
+        Dictionary<int, List<int>> Follows = new Dictionary<int, List<int>>();
         public Form2()
         {
             InitializeComponent();
@@ -53,15 +55,28 @@ namespace LFAProject
             Queue<string> TokenQ = new Queue<string>(Tokens);
             BTreeNode DFATree = malgorithm.CreateDFA(TokenQ, addedTSigns);
             tree.Nullable(DFATree);
+            int SymbolQt = tree.cont;
             tree.FirstLast(DFATree);
 
-            flTable.Columns.Add("SÍMBOLO");
-            flTable.Columns.Add("FIRST");
-            flTable.Columns.Add("LAST");
-            flTable.Columns.Add("NULLABLE");
+            firstLastTable.Columns.Add("Símbolo");
+            firstLastTable.Columns.Add("First");
+            firstLastTable.Columns.Add("Last");
+            firstLastTable.Columns.Add("Nullable");
             FirstLastTable(DFATree);
-            dataGridView1.DataSource = flTable;
+            dataGridView1.DataSource = firstLastTable;
 
+            followTable.Columns.Add("Símbolo");
+            followTable.Columns.Add("Follow");
+            for (int i = 0; i < SymbolQt; i++) //it wont go up to 56
+            {
+                Follows.Add(i, new List<int>());
+            }
+            FollowTable(DFATree);
+            foreach (var entry in Follows)
+            {
+                followTable.Rows.Add(entry.Key, string.Join(",", entry.Value));
+            }
+            dataGridView2.DataSource = followTable;
             PostOrder(DFATree);
         }
 
@@ -81,8 +96,31 @@ namespace LFAProject
             {
                 FirstLastTable(root.left);
                 FirstLastTable(root.right);
-                flTable.Rows.Add(root.Token, string.Join(",", root.First), string.Join(",", root.Last), root.isNullable.ToString());
+                firstLastTable.Rows.Add(root.Token, string.Join(",", root.First), string.Join(",", root.Last), root.isNullable.ToString());
             }            
+        }
+
+        private void FollowTable(BTreeNode root)
+        {
+            if (root != null)
+            {
+                FollowTable(root.left);
+                FollowTable(root.right);
+                if (root.Token != "|" && root.left != null && root.right != null)
+                {
+                    foreach (var last in root.left.Last)
+                    {
+                        Follows.FirstOrDefault(x => x.Key == last).Value.AddRange(root.right.First);
+                    }                    
+                }
+                else if (root.Token != "?" && root.left != null && root.right == null)
+                {
+                    foreach (var last in root.left.Last)
+                    {
+                        Follows.FirstOrDefault(x => x.Key == last).Value.AddRange(root.left.Last);
+                    }
+                }
+            }
         }
     }
 }
