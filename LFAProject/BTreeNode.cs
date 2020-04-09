@@ -148,7 +148,7 @@ namespace LFAProject
                 if (root.left == null && root.right == null)
                 {
                     root.isNullable = false;
-                    root.leafNumber = cont++;
+                    root.leafNumber = ++cont;
                     root.First.Add(cont);
                     root.Last.Add(cont);
                 }

@@ -59,6 +59,7 @@ namespace LFAProject
             int SymbolQt = tree.cont;
             tree.FirstLast(DFATree);
 
+            //FirstLast table
             firstLastTable.Columns.Add("Símbolo");
             firstLastTable.Columns.Add("First");
             firstLastTable.Columns.Add("Last");
@@ -66,6 +67,7 @@ namespace LFAProject
             FirstLastTable(DFATree);
             dataGridView1.DataSource = firstLastTable;
 
+            //Follow table
             followTable.Columns.Add("Símbolo");
             followTable.Columns.Add("Follow");
             for (int i = 0; i <= SymbolQt; i++)
@@ -79,6 +81,7 @@ namespace LFAProject
             }
             dataGridView2.DataSource = followTable;
 
+            //Transition table
             transitionTable.Columns.Add("Estado");
             foreach (var Tsign in addedTSigns)
             {
@@ -150,14 +153,14 @@ namespace LFAProject
         }
 
         private void TransitionTable(BTreeNode root, List<List<int>> stateList) 
-        {
+        {            
             int numRow = transitionTable.Rows.Count - 1;            
             foreach (var number in stateList[numRow])
             {
                 BTreeNode node = SearchNode(number, root);
                 int numColumn = transitionTable.Columns[node.Token].Ordinal;
                 Follows.TryGetValue(number, out List<int> follows);
-                transitionTable.Rows[numRow][numColumn] = string.Join(",", follows);                
+                transitionTable.Rows[numRow][numColumn] += string.Join(",", follows);                
             }
         }
     }

@@ -49,6 +49,7 @@
     <Compile Include="BTreeNode.cs" />
     <Compile Include="CheckGrammar.cs" />
     <Compile Include="DFA.cs" />
+    <Compile Include="DictionaryExtensions.cs" />
     <Compile Include="FileClass.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
