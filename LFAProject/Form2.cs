@@ -13,12 +13,13 @@ namespace LFAProject
     public partial class Form2 : Form
     {
         Malgorithm malgorithm = new Malgorithm();
-        BTreeNode tree = new BTreeNode();
-        DFA dfa = new DFA();        
+        readonly BTreeNode tree = new BTreeNode();
+        readonly DFA dfa = new DFA();        
         string fileName;
         string regex;
-        DataTable firstLastTable = new DataTable();
-        DataTable followTable = new DataTable();
+        private readonly DataTable firstLastTable = new DataTable();
+        private readonly DataTable followTable = new DataTable();
+        readonly DataTable transitionTable = new DataTable();
         Dictionary<int, List<int>> Follows = new Dictionary<int, List<int>>();
         public Form2()
         {
@@ -67,7 +68,7 @@ namespace LFAProject
 
             followTable.Columns.Add("Símbolo");
             followTable.Columns.Add("Follow");
-            for (int i = 0; i < SymbolQt; i++) //it wont go up to 56
+            for (int i = 0; i <= SymbolQt; i++)
             {
                 Follows.Add(i, new List<int>());
             }
@@ -77,16 +78,41 @@ namespace LFAProject
                 followTable.Rows.Add(entry.Key, string.Join(",", entry.Value));
             }
             dataGridView2.DataSource = followTable;
-            PostOrder(DFATree);
+
+            transitionTable.Columns.Add("Estado");
+            foreach (var Tsign in addedTSigns)
+            {
+                transitionTable.Columns.Add(Tsign);
+            }
+            List<List<int>> stateList = new List<List<int>>();
+            stateList.Add(DFATree.First);
+            transitionTable.Rows.Add();
+            transitionTable.Rows[0][0] = string.Join(",", stateList[0]);
+            TransitionTable(DFATree,stateList);
+            
         }
 
-        private void PostOrder(BTreeNode root)
-        {            
+        private BTreeNode SearchNode(int leafNum, BTreeNode root)
+        {
             if (root != null)
-            {                
-                PostOrder(root.left);                
-                PostOrder(root.right);
-                regex += root.Token;
+            {
+                if (root.leafNumber == leafNum)
+                {
+                    return root;
+                }
+                else
+                {
+                    BTreeNode foundNode = SearchNode(leafNum, root.left);
+                    if (foundNode == null)
+                    {
+                        foundNode = SearchNode(leafNum, root.right);
+                    }
+                    return foundNode;
+                }
+            }
+            else
+            {
+                return null;
             }
         }
 
@@ -120,6 +146,18 @@ namespace LFAProject
                         Follows.FirstOrDefault(x => x.Key == last).Value.AddRange(root.left.Last);
                     }
                 }
+            }
+        }
+
+        private void TransitionTable(BTreeNode root, List<List<int>> stateList) 
+        {
+            int numRow = transitionTable.Rows.Count - 1;            
+            foreach (var number in stateList[numRow])
+            {
+                BTreeNode node = SearchNode(number, root);
+                int numColumn = transitionTable.Columns[node.Token].Ordinal;
+                Follows.TryGetValue(number, out List<int> follows);
+                transitionTable.Rows[numRow][numColumn] = string.Join(",", follows);                
             }
         }
     }
