@@ -14,6 +14,7 @@ namespace LFAProject
 {
     public partial class Form1 : Form
     {
+        Malgorithm malgorithm = new Malgorithm();
         private readonly FileClass fileClass = new FileClass();
         readonly CheckGrammar checkGramar = new CheckGrammar();
         string error = string.Empty;        
@@ -26,7 +27,7 @@ namespace LFAProject
         {
             //BTreeNode SetsTree = malgorithmgg.FillRETree("S");
             //BTreeNode TokensTree = malgorithmgg.FillRETree("T");
-            //BTreeNode ErrorsTree = malgorithmgg.FillRETree("E");
+            BTreeNode ErrorsTree = malgorithm.FillRETree("E");
             //BTreeNode ActionsTree = malgorithmgg.FillRETree("A");                        
             
 

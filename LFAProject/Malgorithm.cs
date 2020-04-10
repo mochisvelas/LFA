@@ -8,17 +8,30 @@ namespace LFAProject
 {
     class Malgorithm
     {
-        Tools tools = new Tools();
-        string SetsRegex = @"((S·E·T·S·\n+·[A-Z]+·=)·('·[A-Z]·'·.·.·'·[A-Z]·'|'·[a-z]·'·.·.·'·[a-z]·'|'·[0-9]·'·.·.·'·[0-9]·'|C·H·R·\(·[0-9]+·\)·.·.·C·H·R·\(·[0-9]+·\)|'·[sym]·')·((\+·('·[A-Z]·'·.·.·'·[A-Z]·'|'·[a-z]·'·.·.·'·[a-z]·'|'·[0-9]·'·.·.·'·[0-9]·'|C·H·R·\(·[0-9]+·\)·.·.·C·H·R·\(·[0-9]+·\)|'·[sym]·'))*)·\n+)?";
-        string TokensRegex = @"T·O·K·E·N·S·\n·(T·O·K·E·N·[blnkspc]+·[0-9]+·=·('·[sym]·'·(('·[sym]·')+)|('·[A-Z]·')+|'·(\?|\+|\(|\))·'|'·(\?|\+|\(|\))·'·'·(\?|\+|\(|\))·'|([A-Z]·((\?|\+)?))+|('·([quote]|')·'·[A-Z]+·'·([quote]|')·')·((\|·'·([quote]|')·'·[A-Z]+·'·([quote]|')·')*)|[A-Z]+·\(·[A-Z]+·\|·[A-Z]+·\)·((\*|\?)?)))·((\n·T·O·K·E·N·[blnkspc]+·[0-9]+·=·('·[sym]·'·(('·[sym]·')+)|('·[A-Z]·')+|'·(\?|\+|\(|\))·'|'·(\?|\+|\(|\))·'·'·(\?|\+|\(|\))·'|([A-Z]·((\?|\+)?))+|('·([quote]|')·'·[A-Z]+·'·([quote]|')·')·((\|·'·([quote]|')·'·[A-Z]+·'·([quote]|')·')*)|[A-Z]+·\(·[A-Z]+·\|·[A-Z]+·\)·((\*|\?)?)))*)·{·R·E·S·E·R·V·A·D·A·S·\(·\)·}";
-        string ActionsRegex = @"(A·C·T·I·O·N·S·(R·E·S·E·R·V·A·D·A·S·\(·\)·{·(09+·=·'·AZ+·')·(/n·09+·=·'·AZ·')·})·((/n·AZ·\(·\)·{·(09+·=·'·AZ+·')·(/n·09+·=·'·AZ·')·})*))·#";        
-        string ErrorrsRegex = @"([A-Z]+·E·R·R·O·R·=·[0-9]+)·((\n·[A-Z]+·E·R·R·O·R·=·[0-9]+)*)";
-        List<string> TerminalSigns = new List<string> { "S", "E", "T", "S","A", "C","I","O","N","R","K","H","V","D","[A-Z]", "[a-z]", "[sym]", ".","[0-9]", @"\n", "[quote]", "[blnkspc]", @"\t", @"\(", @"\)", "=", "#", "'", @"\+", @"\?", @"\*", @"\|", "a", "b"};
-        List<string> OperatorSigns = new List<string> { "+", "(", ")", "[", "]", "?", "*", "|", "·"};
-        Stack<string> TokenStack = new Stack<string>();
-        Stack<BTreeNode> BTreeStack = new Stack<BTreeNode>();
-        Dictionary<string, int> dicPrecedence = new Dictionary<string, int> {{ "(", 5 }, { ")", 5 }, { "+", 4 }, { "?", 4 }, { "*", 4 }, { "·", 3 }, { "^", 2 }, { "$", 2 }, { "|", 1 } };
-        //string eg = @"a|(a·b)|a|b|a";
+        readonly Tools tools = new Tools();
+        static string tk1 = @"([A-Z]·(\?|\+|\*)?)";
+        static string tk2 = @"'·'·'·[A-Z]+·'·'·'|'·[quote]·'·[A-Z]+·'·[quote]·'";
+        static readonly string tk3 = @"(\?|\+|\*)?";
+        static string tk4 = @"T·O·K·E·N·[blnkspc]+·[0-9]+·=·(('·[sym]·')+|('·[A-Z]·')+|gg1+|(gg5|gg6)·(\|·(gg5|gg6))*|[A-Z]+·\(·[A-Z]+·\|·[A-Z]+·\)·"+tk3+@")";
+        static string tk5 = @"'·'·'·[A-Z]+·'·'·'";
+        static string tk6 = @"'·[quote]·'·[A-Z]+·'·[quote]·'";
+        static string tk7 = @"'·[A-Z]·'·.·.·'·[A-Z]·'";
+        static string tk8 = @"'·[a-z]·'·.·.·'·[a-z]·'";
+        static string tk9 = @"[A-Z]+·=·((gg7|gg8|'·[sym]·')·(\+·(gg7|gg8|'·[sym]·'))*|'·[0-9]·'·.·.·'·[0-9]·'|C·H·R·\(·[0-9]+·\)·.·.·C·H·R·\(·[0-9]+·\))";
+        static string tk10 = @"gg7|gg8|'·[sym]·'";
+        readonly string SetsRegex = @"(S·E·T·S·\n+·([A-Z]+·=·((gg14)·(\+·(gg14))*|'·[0-9]·'·.·.·'·[0-9]·'|C·H·R·\(·[0-9]+·\)·.·.·C·H·R·\(·[0-9]+·\)))·(\n·gg9)*)?";
+        readonly string TokensRegex = @"T·O·K·E·N·S·\n+·(T·O·K·E·N·[blnkspc]+·[0-9]+·=·(('·[sym]·')+|('·[A-Z]·')+|gg1+|(gg5|gg6)·(\|·(gg5|gg6))*|[A-Z]+·\(·[A-Z]+·\|·[A-Z]+·\)·gg3))·(\n·gg4)*
+            ·{·R·E·S·E·R·V·A·D·A·S·\(·\)·}";
+        readonly string ActionsRegex = @"A·C·T·I·O·N·S·\n+·(R·E·S·E·R·V·A·D·A·S·\(·\)·{·([0-9]+·=·'·[A-Z]+·')·(\n·[0-9]+·=·'·[A-Z]+·')*·\n·})·(\n·[A-Z]+·\(·\)·{·([0-9]+·=·'·[A-Z]+·')
+            ·(\n·[0-9]+·=·'·[A-Z]+·')·\n·})*";
+        readonly string ErrorrsRegex = @"([A-Z]+·E·R·R·O·R·=·[0-9]+)·(\n·[A-Z]+·E·R·R·O·R·=·[0-9]+)*";
+        readonly List<string> TerminalSigns = new List<string> { "S", "E", "T", "S","A", "C","I","O","N","R","K","H","V","D","[A-Z]", "[a-z]", "[sym]", ".","[0-9]", @"\n", "[quote]",
+            "[blnkspc]", @"\t", @"\(", @"\)", "=", "#", "'", @"\+", @"\?", @"\*", @"\|"};
+        private readonly List<string> OperatorSigns = new List<string> { "+", "(", ")", "[", "]", "?", "*", "|", "·"};
+        readonly Stack<string> TokenStack = new Stack<string>();
+        readonly Stack<BTreeNode> BTreeStack = new Stack<BTreeNode>();
+        readonly Dictionary<string, int> dicPrecedence = new Dictionary<string, int> {{ "(", 5 }, { ")", 5 }, { "+", 4 }, { "?", 4 }, { "*", 4 }, { "·", 3 }, { "^", 2 }, { "$", 2 },
+            { "|", 1 } };        
         
         public BTreeNode FillRETree(string section) 
         {            

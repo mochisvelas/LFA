@@ -48,15 +48,18 @@ namespace LFAProject
             List<string> Tokens = dfa.GetRegex(fileName, addedTSigns, ref error);
             if (error != "") 
             {
-                MessageBox.Show(error, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error); addedTSigns.Clear();
+                MessageBox.Show(error, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error); 
                 return;
-            } 
+            }
+            addedTSigns.Clear();
             foreach (var token in Tokens)
             {
                 if (!addedTSigns.Contains(token) && token != "*" && token != "|" && token != "(" && token != ")" && token != "·" && token != "+" && token != "?")                
                     addedTSigns.Add(token);                
             }
             Queue<string> TokenQ = new Queue<string>(Tokens);
+            string Regex = string.Join("", TokenQ);
+            label2.Text = Regex;
             BTreeNode DFATree = malgorithm.CreateDFA(TokenQ, addedTSigns);
             tree.Nullable(DFATree);
             int SymbolQt = tree.cont;
@@ -193,6 +196,11 @@ namespace LFAProject
                     transitionTable.Rows[numRow][numColumn] = "---";
             }
             SymStates.ResetValues<string, List<int>>();            
+        }
+
+        private void label2_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
