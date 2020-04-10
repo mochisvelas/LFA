@@ -15,9 +15,7 @@ namespace LFAProject
     public partial class Form1 : Form
     {
         private readonly FileClass fileClass = new FileClass();
-        Malgorithm malgorithmgg = new Malgorithm();
-        CheckGrammar checkGramar = new CheckGrammar();
-        DFA genarateDFA = new DFA();
+        readonly CheckGrammar checkGramar = new CheckGrammar();
         string error = string.Empty;        
         public Form1()
         {

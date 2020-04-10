@@ -8,6 +8,9 @@ namespace LFAProject
 {
     class Tools
     {
+        /// <summary>Removes blank spaces</summary>
+        /// <param name="text">Text trim</param>
+        /// <returns>Text without blank spaces</returns>
         public string RemoveUnwantedChars(string text)
         {
             int index = 0;
@@ -38,6 +41,9 @@ namespace LFAProject
             return text;
         }
 
+        /// <summary>Tokenizes a regex</summary>
+        /// <param name="regex">Regex to tokenize</param>
+        /// <returns>Q of tokens</returns>
         public Queue<string> TokenizeRegex(string regex)
         {
             Queue<string> TokenizedRegexQ = new Queue<string>();
@@ -58,10 +64,8 @@ namespace LFAProject
                     token += regexQ.Dequeue().ToString();
                     TokenizedRegexQ.Enqueue(token);
                 }
-                else
-                {
-                    TokenizedRegexQ.Enqueue(token);
-                }
+                else                    
+                    TokenizedRegexQ.Enqueue(token);                
             }
             return TokenizedRegexQ;
         }
