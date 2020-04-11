@@ -17,7 +17,7 @@ namespace LFAProject
         readonly Dictionary<int, List<int>> Follows = new Dictionary<int, List<int>>();
         readonly Dictionary<string, List<int>> SymStates = new Dictionary<string, List<int>>();
         string error = string.Empty;
-
+        BTreeNode DFATree = new BTreeNode();
         public DataTable FollowTable1 { get; } = new DataTable();
 
         public Form2()
@@ -42,6 +42,10 @@ namespace LFAProject
         
         private void button1_Click(object sender, EventArgs e)
         {
+            if (DFATree.Token != null)
+            {
+                return;
+            }
             List<string> addedTSigns = dfa.TSigns(fileName);
             List<string> Tokens = dfa.GetRegex(fileName, addedTSigns, ref error);
             if (!string.IsNullOrEmpty(error)) 
@@ -58,7 +62,7 @@ namespace LFAProject
             Queue<string> TokenQ = new Queue<string>(Tokens);
             string Regex = string.Join("", TokenQ);
             label2.Text = Regex;
-            BTreeNode DFATree = malgorithm.CreateDFA(TokenQ, addedTSigns, ref error);
+            DFATree = malgorithm.CreateDFA(TokenQ, addedTSigns, ref error);
             tree.Nullable(DFATree);
             int SymbolQt = tree.cont;
             tree.FirstLast(DFATree);
@@ -199,6 +203,24 @@ namespace LFAProject
         private void label2_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            if (DFATree.Token != null)
+            {
+                using (TreeDraw treeDraw = new TreeDraw(DFATree))
+                {
+                    treeDraw.ShowDialog();
+                }
+                //TreeDraw treeDraw = new TreeDraw(DFATree);
+                //treeDraw.ShowDialog();                
+            }
+            else
+            {
+                MessageBox.Show("No se ha cargado el archivo.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
         }
     }
 }

@@ -2,7 +2,7 @@
 
 namespace LFAProject
 {
-    class BTreeNode
+    public class BTreeNode
     {
         public string Token { get; set; }        
         public BTreeNode parentNode;
