@@ -5,12 +5,13 @@ namespace LFAProject
 {
     class CheckGrammar
     {
-        public void CompareGrammar(string fileName, ref string error) 
+        public void CompareGrammar(string fileName, ref string error)
         {
             int cont = 0;
             StreamReader grammarFile = new StreamReader(fileName);
             string grammarfirst = RemoveUnwantedChars(grammarFile.ReadLine());
             Regex SetsRegex = new Regex(@"^(([A-Z]+=(('[A-Za-z0-9]'\.\.'[A-Za-z0-9]')|(CHR\([0-9]+\)\.\.CHR\([0-9]+\))|('[A-Za-z0-9_]')))((((\+(('[A-Za-z0-9_]')|('[A-Za-z0-9]'\.\.'[A-Za-z0-9]')))*))))$");
+            Regex SetsLOl = new Regex(@"((SETS)((\t|\s)*(\n))+([A-Z]+(\t|\s)*=(\t|\s)*((('.'|CHR\([0-9]+\))(\.\.('.'|CHR\([0-9]+\)))?)(\+(('.'|CHR\([0-9]+\))(\.\.('.'|CHR\([0-9]+\)))?))*(\t|\s)*)\n+))?  (((\t|\s)*(\n))*     (TOKENS)    ((\t|\s)*(\n))+     ((TOKEN)(\t|\s)+[0-9]+(\t|\s)*=()(\n+)*\n+))             (ACTIONS)       (ERRORS)");
             Regex TokensRegex = new Regex(@"^((TOKEN\s+[0-9]+=('[\-_\*\+@\$%&]{1}'(('[\-_\*\+@\$%&]{1}')+)|'[A-Z]+'|'(\?|\+|\(|\))'|'(\?|\+|\(|\))''(\?|\+|\(|\))'|(AZ+((\?|\+)?))+|('(''|')'[A-Z]+'(''|')')((\|'(''|')'[A-Z]+'(''|')')*)| [A-Z]+\([A-Z]+\|[A-Z]+\)((\*|\?)?)))((\nTOKEN\s+[0-9]+=('[\-_\*\+@\$%&]{1}'(('[\-_\*\+@\$%&]{1}')+)|'[A-Z]+'|'(\?|\+|\(|\))'|'(\?|\+|\(|\))''(\?|\+|\(|\))'|(AZ+((\?|\+)?))+|('(''|')'[A-Z]+'(''|')')((\|'(''|')'[A-Z]+'(''|')')*)|[A-Z]+\([A-Z]+\|[A-Z]+\)((\*|\?)?)))*){RESERVADAS\(\)})#$");
             Regex ActionsRegex = new Regex(@"^(ACTIONS([0-9]+='[A-Z]+')(\n[0-9]+='[A-Z]+')((\n[A-Z]+\(\){([0-9]+='[A-Z]+')(\n[0-9]+='[A-Z]+')})*))#$");
             Regex ErrorsRegex = new Regex(@"^([A-Z]+ERROR=[0-9]+((\n[A-Z]+ERROR=[0-9]+)*))#$");
@@ -28,7 +29,7 @@ namespace LFAProject
                         error = "Error en set en la línea " + cont;
                     }
                     grammarSecond = RemoveUnwantedChars(grammarFile.ReadLine());
-                }                                
+                }
 
 
                 while (!grammarFile.EndOfStream && RemoveUnwantedChars(grammarFile.ReadLine()) != "ACTIONS")
@@ -127,7 +128,7 @@ namespace LFAProject
             {
                 error = "Se esperaba SETS o TOKENS";
             }
-                       
+
         }
 
         public string RemoveUnwantedChars(string grammar)
