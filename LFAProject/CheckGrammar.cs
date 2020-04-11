@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using System.IO;
 
 namespace LFAProject
@@ -15,9 +10,7 @@ namespace LFAProject
             int cont = 0;
             StreamReader grammarFile = new StreamReader(fileName);
             string grammarfirst = RemoveUnwantedChars(grammarFile.ReadLine());
-            //Regex SetsReg = new Regex(@"^([A-Za-z]+=(('[A-Z]'\.\.'[A-Z]')|('[a-z]'\.\.'[a-z]')|('[0-9]'\.\.'[0-9]')|(CHR\([0-9]+\)\.\.CHR\([0-9]+\))|('[\-_\*\+@\$%&]{1}'))(((\+('[A-Z]'\.\.'[A-Z]')|('[a-z]'\.\.'[a-z]')|('[0-9]'\.\.'[0-9]')|(CHR\([0-9]+\)\.\.CHR\([0-9]+\))|('[\-_\*\+@\$%&]{1}')))*))?$");
             Regex SetsRegex = new Regex(@"^(([A-Z]+=(('[A-Za-z0-9]'\.\.'[A-Za-z0-9]')|(CHR\([0-9]+\)\.\.CHR\([0-9]+\))|('[A-Za-z0-9_]')))((((\+(('[A-Za-z0-9_]')|('[A-Za-z0-9]'\.\.'[A-Za-z0-9]')))*))))$");
-            //Regex SetsRege = new Regex(@"^([a-zA-ZñÑ\s])+=((('([a-zA-Z0-9ñÑ<>=;:(){}\.\[\],'\+\-_\*\.\s]{1})'|'([a-zA-Z0-9Ññ<>=;:(){}\.\[\],'\+\-_\*\.\s]{1})'\.\.'([0-9a-zA-ZñÑ<>=;:(){}\.\[\],'\+\-_\*\.\s]{1})')(\+('([0-9a-zA-ZñÑ<>=;:(){}\.\[\],'\+\-_\*\.\s]{1})'|'([0-9a-zA-ZñÑ<>=;:(){}\.\[\],'\+\-_\*\.\s]{1})'\.\.'([0-9a-zA-ZñÑ<>=;:(){}\.\[\],'\+\-_\*\.\s]{1})'))*)|((CHR\([0-9]+\)\.\.CHR\([0-9]+\))(\+(CHR\([0-9]+\)\.\.CHR\([0-9]+\)))))$");
             Regex TokensRegex = new Regex(@"^((TOKEN\s+[0-9]+=('[\-_\*\+@\$%&]{1}'(('[\-_\*\+@\$%&]{1}')+)|'[A-Z]+'|'(\?|\+|\(|\))'|'(\?|\+|\(|\))''(\?|\+|\(|\))'|(AZ+((\?|\+)?))+|('(''|')'[A-Z]+'(''|')')((\|'(''|')'[A-Z]+'(''|')')*)| [A-Z]+\([A-Z]+\|[A-Z]+\)((\*|\?)?)))((\nTOKEN\s+[0-9]+=('[\-_\*\+@\$%&]{1}'(('[\-_\*\+@\$%&]{1}')+)|'[A-Z]+'|'(\?|\+|\(|\))'|'(\?|\+|\(|\))''(\?|\+|\(|\))'|(AZ+((\?|\+)?))+|('(''|')'[A-Z]+'(''|')')((\|'(''|')'[A-Z]+'(''|')')*)|[A-Z]+\([A-Z]+\|[A-Z]+\)((\*|\?)?)))*){RESERVADAS\(\)})#$");
             Regex ActionsRegex = new Regex(@"^(ACTIONS([0-9]+='[A-Z]+')(\n[0-9]+='[A-Z]+')((\n[A-Z]+\(\){([0-9]+='[A-Z]+')(\n[0-9]+='[A-Z]+')})*))#$");
             Regex ErrorsRegex = new Regex(@"^([A-Z]+ERROR=[0-9]+((\n[A-Z]+ERROR=[0-9]+)*))#$");

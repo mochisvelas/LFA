@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 
 namespace LFAProject
@@ -16,7 +12,7 @@ namespace LFAProject
         /// <param name="error">The error message to get</param>
         /// <returns>True if the file type is correct, otherwise false</returns>
         public bool IsFileTypeCorrect(string fileName, string filetype, ref string error)
-        {            
+        {
             if (new FileInfo(fileName).Length != 0)
             {
                 if (filetype.Equals(Path.GetExtension(fileName), StringComparison.OrdinalIgnoreCase))
@@ -35,16 +31,15 @@ namespace LFAProject
         /// <param name="fileName">The file selected by the user</param>
         /// <param name="error">The error message to get</param>
         /// <returns>True if the tokens are compared successfully, otherwise false</returns>
-        public bool ReadGrammar(string fileName, ref string error, BTreeNode regexTree) 
+        public bool ReadGrammar(string fileName, ref string error, BTreeNode regexTree)
         {
             BTreeNode btree = new BTreeNode();
             CheckGrammar checkgrammar = new CheckGrammar();
             StreamReader grammarFile = new StreamReader(fileName);
             string grammar = grammarFile.ReadToEnd();
             var lines = File.ReadAllLines(fileName);
-            for (var i = 0; i < lines.Length; i++)
-            {                
-                                
+            for (int i = 0; i < lines.Length; i++)
+            {
                 string copyGrammar = new string(grammar.ToCharArray());
                 int index = 0;
                 while (index != -1)
@@ -58,15 +53,11 @@ namespace LFAProject
                     index = grammar.IndexOf("\t");
                     if (index != -1)
                         grammar = grammar.Remove(index, 1);
-                }                
+                }
                 checkgrammar.CompareGrammar(fileName, ref error);
                 error += ("en la línea {0}", "i");
             }
-            
-            
-            
-            //btree.InOrderAndCompare(regexTree, grammarQ, ref error);
-            
+            //btree.InOrderAndCompare(regexTree, grammarQ, ref error);            
             return true;
         }
 

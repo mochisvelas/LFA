@@ -1,27 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace LFAProject
 {
     public partial class Form2 : Form
     {
-        readonly Malgorithm malgorithm = new Malgorithm();        
+        readonly Malgorithm malgorithm = new Malgorithm();
         readonly BTreeNode tree = new BTreeNode();
-        readonly DFA dfa = new DFA();        
-        string fileName;        
+        readonly DFA dfa = new DFA();
+        string fileName;
         private readonly DataTable firstLastTable = new DataTable();
-        private readonly DataTable followTable = new DataTable();
         private readonly DataTable transitionTable = new DataTable();
         readonly Dictionary<int, List<int>> Follows = new Dictionary<int, List<int>>();
         readonly Dictionary<string, List<int>> SymStates = new Dictionary<string, List<int>>();
         string error = string.Empty;
+
+        public DataTable FollowTable1 { get; } = new DataTable();
+
         public Form2()
         {
             InitializeComponent();
@@ -46,7 +44,7 @@ namespace LFAProject
         {
             List<string> addedTSigns = dfa.TSigns(fileName);
             List<string> Tokens = dfa.GetRegex(fileName, addedTSigns, ref error);
-            if (error != "") 
+            if (!string.IsNullOrEmpty(error)) 
             {
                 MessageBox.Show(error, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error); 
                 return;
@@ -60,7 +58,7 @@ namespace LFAProject
             Queue<string> TokenQ = new Queue<string>(Tokens);
             string Regex = string.Join("", TokenQ);
             label2.Text = Regex;
-            BTreeNode DFATree = malgorithm.CreateDFA(TokenQ, addedTSigns);
+            BTreeNode DFATree = malgorithm.CreateDFA(TokenQ, addedTSigns, ref error);
             tree.Nullable(DFATree);
             int SymbolQt = tree.cont;
             tree.FirstLast(DFATree);
@@ -74,8 +72,8 @@ namespace LFAProject
             dataGridView1.DataSource = firstLastTable;
 
             //Follow table
-            followTable.Columns.Add("Símbolo");
-            followTable.Columns.Add("Follow");
+            FollowTable1.Columns.Add("Símbolo");
+            FollowTable1.Columns.Add("Follow");
             for (int i = 0; i <= SymbolQt; i++)
             {
                 Follows.Add(i, new List<int>());
@@ -83,9 +81,9 @@ namespace LFAProject
             FollowTable(DFATree);
             foreach (var entry in Follows)
             {
-                followTable.Rows.Add(entry.Key, string.Join(",", entry.Value));
+                FollowTable1.Rows.Add(entry.Key, string.Join(",", entry.Value));
             }
-            dataGridView2.DataSource = followTable;
+            dataGridView2.DataSource = FollowTable1;
 
             //Transition table
             transitionTable.Columns.Add("Estado");

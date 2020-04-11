@@ -1,12 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.IO;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 
@@ -14,10 +6,10 @@ namespace LFAProject
 {
     public partial class Form1 : Form
     {
-        Malgorithm malgorithm = new Malgorithm();
+        readonly Malgorithm malgorithm = new Malgorithm();
         private readonly FileClass fileClass = new FileClass();
         readonly CheckGrammar checkGramar = new CheckGrammar();
-        string error = string.Empty;        
+        string error = string.Empty;
         public Form1()
         {
             InitializeComponent();
@@ -25,12 +17,12 @@ namespace LFAProject
 
         private void button1_Click(object sender, EventArgs e)
         {
-            //BTreeNode SetsTree = malgorithmgg.FillRETree("S");
-            //BTreeNode TokensTree = malgorithmgg.FillRETree("T");
-            BTreeNode ErrorsTree = malgorithm.FillRETree("E");
-            //BTreeNode ActionsTree = malgorithmgg.FillRETree("A");                        
-            
-
+            BTreeNode RegexTree = malgorithm.FillRETree(ref error);
+            if (!string.IsNullOrEmpty(error))
+            {
+                MessageBox.Show(error, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
             openFileDialog1.Filter = "Text|*.txt|All|*.*";
 
             if (openFileDialog1.ShowDialog() == DialogResult.OK)

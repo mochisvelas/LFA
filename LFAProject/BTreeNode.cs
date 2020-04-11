@@ -1,18 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace LFAProject
 {
     class BTreeNode
     {
-        public string Token;
+        public string Token { get; set; }        
         public BTreeNode parentNode;
-        public BTreeNode right, left;
-        public bool isNullable;
-        public int leafNumber;
+        public BTreeNode right { get; set; }
+        public BTreeNode left { get; set; }
+        public bool isNullable { get; set; }
+        public int leafNumber { get; set; }
         public List<int> First = new List<int>();
         public List<int> Last = new List<int>();
         public List<int> Follow = new List<int>();
@@ -27,19 +24,7 @@ namespace LFAProject
         {
             Token = null;
             right = left = null;
-        }
-
-        public BTreeNode(string value, BTreeNode leftChild, BTreeNode rightChild)
-        {
-            Token = value;
-            left = leftChild;
-            right = rightChild;
-        }
-
-        public string GetValue()
-        {
-            return Token;
-        }
+        }      
 
         /*public BTreeNode hasOrParent(BTreeNode node) 
         {
