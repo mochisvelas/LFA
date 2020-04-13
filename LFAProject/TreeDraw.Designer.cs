@@ -36,9 +36,9 @@
             // 
             // pictureBox1
             // 
-            this.pictureBox1.Location = new System.Drawing.Point(110, 15);
+            this.pictureBox1.Location = new System.Drawing.Point(14, 13);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(732, 503);
+            this.pictureBox1.Size = new System.Drawing.Size(1148, 668);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
             this.pictureBox1.TabIndex = 0;
             this.pictureBox1.TabStop = false;
@@ -47,9 +47,9 @@
             // 
             this.panel1.AutoScroll = true;
             this.panel1.Controls.Add(this.pictureBox1);
-            this.panel1.Location = new System.Drawing.Point(141, 65);
+            this.panel1.Location = new System.Drawing.Point(171, 12);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(945, 537);
+            this.panel1.Size = new System.Drawing.Size(1178, 684);
             this.panel1.TabIndex = 1;
             // 
             // TreeDraw

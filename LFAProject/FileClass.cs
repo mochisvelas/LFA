@@ -31,35 +31,35 @@ namespace LFAProject
         /// <param name="fileName">The file selected by the user</param>
         /// <param name="error">The error message to get</param>
         /// <returns>True if the tokens are compared successfully, otherwise false</returns>
-        public bool ReadGrammar(string fileName, ref string error, BTreeNode regexTree)
-        {
-            BTreeNode btree = new BTreeNode();
-            CheckGrammar checkgrammar = new CheckGrammar();
-            StreamReader grammarFile = new StreamReader(fileName);
-            string grammar = grammarFile.ReadToEnd();
-            var lines = File.ReadAllLines(fileName);
-            for (int i = 0; i < lines.Length; i++)
-            {
-                string copyGrammar = new string(grammar.ToCharArray());
-                int index = 0;
-                while (index != -1)
-                {
-                    index = grammar.IndexOf(" ");
-                    if (index != -1)
-                        grammar = grammar.Remove(index, 1);
-                    index = grammar.IndexOf("\r");
-                    if (index != -1)
-                        grammar = grammar.Remove(index, 1);
-                    index = grammar.IndexOf("\t");
-                    if (index != -1)
-                        grammar = grammar.Remove(index, 1);
-                }
-                checkgrammar.CompareGrammar(fileName, ref error);
-                error += ("en la línea {0}", "i");
-            }
-            //btree.InOrderAndCompare(regexTree, grammarQ, ref error);            
-            return true;
-        }
+        //public bool ReadGrammar(string fileName, ref string error, BTreeNode regexTree)
+        //{
+        //    BTreeNode btree = new BTreeNode();
+        //    CheckGrammar checkgrammar = new CheckGrammar();
+        //    StreamReader grammarFile = new StreamReader(fileName);
+        //    string grammar = grammarFile.ReadToEnd();
+        //    var lines = File.ReadAllLines(fileName);
+        //    for (int i = 0; i < lines.Length; i++)
+        //    {
+        //        string copyGrammar = new string(grammar.ToCharArray());
+        //        int index = 0;
+        //        while (index != -1)
+        //        {
+        //            index = grammar.IndexOf(" ");
+        //            if (index != -1)
+        //                grammar = grammar.Remove(index, 1);
+        //            index = grammar.IndexOf("\r");
+        //            if (index != -1)
+        //                grammar = grammar.Remove(index, 1);
+        //            index = grammar.IndexOf("\t");
+        //            if (index != -1)
+        //                grammar = grammar.Remove(index, 1);
+        //        }
+        //        checkgrammar.CompareGrammar(fileName, ref error);
+        //        error += ("en la línea {0}", "i");
+        //    }
+        //    //btree.InOrderAndCompare(regexTree, grammarQ, ref error);            
+        //    return true;
+        //}
 
 
     }

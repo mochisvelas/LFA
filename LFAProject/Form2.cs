@@ -212,9 +212,7 @@ namespace LFAProject
                 using (TreeDraw treeDraw = new TreeDraw(DFATree))
                 {
                     treeDraw.ShowDialog();
-                }
-                //TreeDraw treeDraw = new TreeDraw(DFATree);
-                //treeDraw.ShowDialog();                
+                }                                
             }
             else
             {

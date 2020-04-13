@@ -5,160 +5,61 @@ namespace LFAProject
 {
     class CheckGrammar
     {
-        public void CompareGrammar(string fileName, ref string error)
+        public bool CompareGrammar(string fileName)
         {
-            int cont = 0;
-            StreamReader grammarFile = new StreamReader(fileName);
-            string grammarfirst = RemoveUnwantedChars(grammarFile.ReadLine());
-            Regex SetsRegex = new Regex(@"^(([A-Z]+=(('[A-Za-z0-9]'\.\.'[A-Za-z0-9]')|(CHR\([0-9]+\)\.\.CHR\([0-9]+\))|('[A-Za-z0-9_]')))((((\+(('[A-Za-z0-9_]')|('[A-Za-z0-9]'\.\.'[A-Za-z0-9]')))*))))$");
-            Regex SetsLOl = new Regex(@"((SETS)((\t|\s)*(\n))+([A-Z]+(\t|\s)*=(\t|\s)*((('.'|CHR\([0-9]+\))(\.\.('.'|CHR\([0-9]+\)))?)(\+(('.'|CHR\([0-9]+\))(\.\.('.'|CHR\([0-9]+\)))?))*(\t|\s)*)\n+))?  (((\t|\s)*(\n))*     (TOKENS)    ((\t|\s)*(\n))+     ((TOKEN)(\t|\s)+[0-9]+(\t|\s)*=(\t|\s)*(((\(([A-Z]+(\t|\s)+\*?)+\))|([A-Z]+(\t|\s)+\*?)+))(\n+)*\n+))             (ACTIONS)       (ERRORS)");
+            string sets = GetSets(fileName);
+            string tokens = GetTokens(fileName);
+            string text = File.ReadAllText(fileName);
+            Regex SetsRegex = new Regex(@"(((SETS)((\t|\s)*(\n))*((\t|\s)*[A-Z]+(\t|\s)*=(\t|\s)*((('.')|(CHR\([0-9]+\)))((\.\.)(('.')|(CHR\([0-9]+\))))?(\+(('.')|(CHR\([0-9]+\)))((\.\.)(('.')|(CHR\([0-9]+\))))?)*)((\t|\s)*(\n))+)+))");
+            Match setsMatch = SetsRegex.Match(sets);
             Regex TokensRegex = new Regex(@"^((TOKEN\s+[0-9]+=('[\-_\*\+@\$%&]{1}'(('[\-_\*\+@\$%&]{1}')+)|'[A-Z]+'|'(\?|\+|\(|\))'|'(\?|\+|\(|\))''(\?|\+|\(|\))'|(AZ+((\?|\+)?))+|('(''|')'[A-Z]+'(''|')')((\|'(''|')'[A-Z]+'(''|')')*)| [A-Z]+\([A-Z]+\|[A-Z]+\)((\*|\?)?)))((\nTOKEN\s+[0-9]+=('[\-_\*\+@\$%&]{1}'(('[\-_\*\+@\$%&]{1}')+)|'[A-Z]+'|'(\?|\+|\(|\))'|'(\?|\+|\(|\))''(\?|\+|\(|\))'|(AZ+((\?|\+)?))+|('(''|')'[A-Z]+'(''|')')((\|'(''|')'[A-Z]+'(''|')')*)|[A-Z]+\([A-Z]+\|[A-Z]+\)((\*|\?)?)))*){RESERVADAS\(\)})#$");
             Regex ActionsRegex = new Regex(@"^(ACTIONS([0-9]+='[A-Z]+')(\n[0-9]+='[A-Z]+')((\n[A-Z]+\(\){([0-9]+='[A-Z]+')(\n[0-9]+='[A-Z]+')})*))#$");
             Regex ErrorsRegex = new Regex(@"^([A-Z]+ERROR=[0-9]+((\n[A-Z]+ERROR=[0-9]+)*))#$");
-
-            if (grammarfirst == "SETS")
+            Regex Regex = new Regex(@"^(((SETS)((\t|\s)*(\n))+((\t|\s)*[A-Z]+(\t|\s)*=(\t|\s)*((('.')|(CHR\([0-9]+\)))((\.\.)(('.')|(CHR\([0-9]+\))))?(\+(('.')|(CHR\([0-9]+\)))((\.\.)(('.')|(CHR\([0-9]+\))))?)*)((\t|\s)*(\n))+)+))?((\n)*(TOKENS)((\t|\s)*(\n))+((\t|\s)*(TOKEN)(\t|\s)+[0-9]+(\t|\s)*=(\t|\s)*(\s|\*|\+|\?|\(|\)|\||'.'|[A-Z]+|{|})+((\t|\s)*(\n))+)+)((\n)*(ACTIONS)((\t|\s)*(\n))+((\t|\s)*(RESERVADAS\(\))((\t|\s)*(\n))+{((\t|\s)*(\n))+((\t|\s)*[0-9]+(\t|\s)*=(\t|\s)*'[A-Z]+'((\t|\s)*(\n))+)+}((\t|\s)*(\n))+)((\t|\s)*[A-Z]+\(\)((\t|\s)*(\n))+{((\t|\s)*(\n))+((\t|\s)*[0-9]+(\t|\s)*=(\t|\s)*'[A-Z]+'((\t|\s)*(\n))+)+}((\t|\s)*(\n))+)*)((([A-Z]*ERROR(\t|\s)*=(\t|\s)*[0-9]+)((\n[A-Z]*ERROR(\t|\s)*=(\t|\s)*[0-9]+)*)))$");
+            Match match = Regex.Match(text);
+            if (match.Success)
             {
-                cont++;
-
-                string grammarSecond = RemoveUnwantedChars(grammarFile.ReadLine());
-                while (!grammarFile.EndOfStream && grammarSecond != "TOKENS")
-                {
-                    cont++;
-                    if (!SetsRegex.IsMatch(grammarSecond))
-                    {
-                        error = "Error en set en la línea " + cont;
-                    }
-                    grammarSecond = RemoveUnwantedChars(grammarFile.ReadLine());
-                }
-
-
-                while (!grammarFile.EndOfStream && RemoveUnwantedChars(grammarFile.ReadLine()) != "ACTIONS")
-                {
-                    cont++;
-                    if (!grammarFile.EndOfStream && !TokensRegex.IsMatch(RemoveUnwantedChars(grammarFile.ReadLine())))
-                    {
-                        error = "Error en token en la línea " + cont;
-                    }
-                }
-
-                if (RemoveUnwantedChars(grammarFile.ReadLine()) != "RESERVADAS()")
-                {
-                    error = "Error en la línea " + cont + ", se esperaba RESERVADAS()";
-                }
-                if (RemoveUnwantedChars(grammarFile.ReadLine()) != "{")
-                {
-                    error = "Error en la línea " + cont + ", se esperaba una '{'.";
-                }
-
-                while (!grammarFile.EndOfStream && RemoveUnwantedChars(grammarFile.ReadLine()) != "}")
-                {
-                    cont++;
-                    if (!ActionsRegex.IsMatch(RemoveUnwantedChars(grammarFile.ReadLine())))
-                    {
-                        error = "Error en token en la línea " + cont;
-                    }
-                    if (grammarFile.EndOfStream)
-                    {
-                        error = "Error en la línea " + cont + ", se esperaba al menos un ERROR";
-                    }
-                }
-
-                while (grammarFile.EndOfStream != true)
-                {
-                    cont++;
-                    if (!ErrorsRegex.IsMatch(RemoveUnwantedChars(grammarFile.ReadLine())))
-                    {
-                        error = "Error en error en la línea " + cont;
-                    }
-                }
-
-
-            }
-            else if (grammarfirst == "TOKENS")
-            {
-                while (!grammarFile.EndOfStream && RemoveUnwantedChars(grammarFile.ReadLine()) != "ACTIONS")
-                {
-                    cont++;
-                    if (!TokensRegex.IsMatch(RemoveUnwantedChars(grammarFile.ReadLine())))
-                    {
-                        error = "Error en token en la línea " + cont;
-                    }
-                }
-
-                if (RemoveUnwantedChars(grammarFile.ReadLine()) != "RESERVADAS()")
-                {
-                    error = "Error en la línea " + cont + ", se esperaba RESERVADAS()";
-                }
-                if (RemoveUnwantedChars(grammarFile.ReadLine()) != "{")
-                {
-                    error = "Error en la línea " + cont + ", se esperaba una '{'.";
-                }
-
-                while (!grammarFile.EndOfStream && RemoveUnwantedChars(grammarFile.ReadLine()) != "}")
-                {
-                    cont++;
-                    if (!ActionsRegex.IsMatch(RemoveUnwantedChars(grammarFile.ReadLine())))
-                    {
-                        error = "Error en token en la línea " + cont;
-                    }
-                    if (grammarFile.EndOfStream)
-                    {
-                        error = "Error en la línea " + cont + ", se esperaba al menos un ERROR";
-                    }
-                    else
-                    {
-                        error = "success";
-                    }
-                }
-
-                while (grammarFile.EndOfStream != true)
-                {
-                    cont++;
-                    if (!ErrorsRegex.IsMatch(RemoveUnwantedChars(grammarFile.ReadLine())))
-                    {
-                        error = "Error en error en la línea " + cont;
-                    }
-                    else
-                    {
-                        error = "success";
-                    }
-                }
+                return true;
             }
             else
             {
-                error = "Se esperaba SETS o TOKENS";
-            }
-
+                return false;
+            }            
         }
 
-        public string RemoveUnwantedChars(string grammar)
+        public string GetSets(string fileName) 
         {
-            int index = 0;
-            if (grammar != null)
+            StreamReader line = new StreamReader(fileName);
+            string readLine = line.ReadLine();
+            while (!readLine.Contains("TOKENS"))
             {
-                while (index != -1)
-                {
-                    index = grammar.IndexOf(" ");
-                    if (index != -1)
-                        grammar = grammar.Remove(index, 1);
-                }
-                index = 0;
-                while (index != -1)
-                {
-                    index = grammar.IndexOf("\r");
-                    if (index != -1)
-                        grammar = grammar.Remove(index, 1);
-                }
-                index = 0;
-                while (index != -1)
-                {
-                    index = grammar.IndexOf("\t");
-                    if (index != -1)
-                        grammar = grammar.Remove(index, 1);
-                }
-                return grammar;
+                readLine += line.ReadLine();
             }
-            return grammar;
+            if (!readLine.Contains("SETS"))
+            {
+                return "";
+            }
+            else
+            {
+                readLine = readLine.Replace("TOKENS", "");
+                return readLine;
+            }            
+        }
+
+        public string GetTokens(string fileName)
+        {
+            StreamReader line = new StreamReader(fileName);
+            string readLine = line.ReadLine();
+            while (!string.IsNullOrEmpty(readLine) && !readLine.Contains("TOKENS") && !readLine.Contains("TOKEN")) 
+            {
+                readLine = line.ReadLine();
+            }                
+            while (!readLine.Contains("ACTIONS"))
+            {
+                readLine += line.ReadLine();
+            }
+            readLine.Replace("ACTIONS", "");
+            return readLine;
         }
     }
 }

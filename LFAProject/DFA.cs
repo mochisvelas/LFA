@@ -39,7 +39,7 @@ namespace LFAProject
                 readLine = line.ReadLine();            
             while (!readLine.Contains("ACTIONS"))
             {
-                if (!readLine.Equals("") && !readLine.Contains("TOKENS"))
+                if (!string.IsNullOrEmpty(readLine) && !readLine.Contains("TOKENS"))
                 {
                     int index = readLine.IndexOf("=");
                     if (index > 0)

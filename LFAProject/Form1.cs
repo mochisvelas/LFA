@@ -38,21 +38,17 @@ namespace LFAProject
                 }
                 else
                 {
-                    string selectedFileName = openFileDialog1.FileName;
-                    Form2 DFAform = new Form2();
-                    DFAform.GetFileName(selectedFileName);
-                    DFAform.Show();
-                    checkGramar.CompareGrammar(selectedFileName, ref error);                    
-                    if (error == "success")
+                    string selectedFileName = openFileDialog1.FileName;                                                            
+                    if (checkGramar.CompareGrammar(selectedFileName))
                     {
                         MessageBox.Show("Gramática correcta", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        //Form2 DFAform = new Form2();
-                        //DFAform.GetFileName(selectedFileName);
-                        //DFAform.Show();
+                        Form2 DFAform = new Form2();
+                        DFAform.GetFileName(selectedFileName);
+                        DFAform.Show();
                     }
                     else
                     {
-                        MessageBox.Show(error, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show("Gramática incorrecta", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
             }            
