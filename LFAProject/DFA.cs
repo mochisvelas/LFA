@@ -93,8 +93,15 @@ namespace LFAProject
                         do
                         {
                             chr += regexQ.Dequeue().ToString();
-                        } while (!TSigns.Contains(chr));
-                        actualToken.Enqueue(chr);
+                        } while (regexQ.Count != 0 && !TSigns.Contains(chr));
+                        if (!TSigns.Contains(chr))
+                        {
+                            error = "Se está intentando hacer referencia a un Set inexistente.";
+                        }
+                        else
+                        {
+                            actualToken.Enqueue(chr);
+                        }                        
                     }
                     else if (chr.Any(x => char.IsLetter(x)) && TSigns.Count == 0)
                     {
@@ -116,7 +123,10 @@ namespace LFAProject
                 }
                 else
                 {
-                    fixedTokens.Enqueue(actualToken.Dequeue());
+                    if (actualToken.Count != 0)
+                    {
+                        fixedTokens.Enqueue(actualToken.Dequeue());
+                    }                    
                     fixedTokens.Enqueue("|");
                 }
             }            
