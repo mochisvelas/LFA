@@ -180,8 +180,17 @@ namespace LFAProject
             {
                 BTreeNode node = SearchNode(state, root);
                 Follows.TryGetValue(state, out List<int> follows);
-                if (node.Token != "#")                        
-                    SymStates.FirstOrDefault(y => y.Key == node.Token).Value.AddRange(follows);                                                 
+                if (node.Token != "#") 
+                {
+                    foreach (var follow in follows)
+                    {
+                        List<int> temp = SymStates.FirstOrDefault(y => y.Key == node.Token).Value;
+                        if (!temp.Any(y => y == follow))
+                        {
+                            SymStates.FirstOrDefault(y => y.Key == node.Token).Value.Add(follow);
+                        }
+                    }                    
+                }                   
             }
             stateList[key] = true;
             foreach (var pair in SymStates)
