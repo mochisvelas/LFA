@@ -57,7 +57,7 @@ namespace LFAProject
                                 string subRange = string.Empty;
                                 foreach (var sub in subRangeArr)
                                 {
-                                    int asciiValue = System.Convert.ToInt32(System.Convert.ToChar(sub));
+                                    int asciiValue = System.Convert.ToChar(sub);
                                     if (!string.IsNullOrEmpty(subRange))
                                     {
                                         subRange += asciiValue;
@@ -200,6 +200,25 @@ namespace LFAProject
             List<string> fixedTokensList = fixedTokens.ToList<string>();
             fixedTokensList.RemoveAt(fixedTokensList.Count - 1);
             return fixedTokensList;
-        }        
+        }
+
+        public Dictionary<int, bool> GetFinalStates(Dictionary<List<int>, bool> statesList, int finalState)
+        {
+            Dictionary<int, bool> finalStatesDic = new Dictionary<int, bool>();
+            int cont = 0;
+            foreach (var state in statesList)
+            {
+                if (state.Key.Contains(finalState))
+                {
+                    finalStatesDic.Add(cont, true);
+                }
+                else
+                {
+                    finalStatesDic.Add(cont, false);
+                }
+                cont++;
+            }
+            return finalStatesDic;
+        }
     }
 }

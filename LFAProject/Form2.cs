@@ -19,6 +19,7 @@ namespace LFAProject
         readonly Dictionary<int, List<int>> Follows = new Dictionary<int, List<int>>();
         readonly Dictionary<string, List<int>> SymStates = new Dictionary<string, List<int>>();
         readonly Dictionary<List<int>, bool> stateList = new Dictionary<List<int>, bool>();
+        Dictionary<int, bool> finalStates = new Dictionary<int, bool>();
         List<string> addedTSigns = new List<string>();
         string error = string.Empty;
         BTreeNode DFATree = new BTreeNode();
@@ -99,12 +100,8 @@ namespace LFAProject
             {
                 transitionTable.Columns.Add(Tsign);
                 SymStates.Add(Tsign, new List<int>());
-            }
-            //Dictionary<List<int>, bool> stateList = new Dictionary<List<int>, bool>()
-            //{
-            //    {DFATree.First, false}
-            //};
-            stateList.Add(DFATree.First, false);
+            }            
+            stateList.Add(DFATree.First, false);            
             transitionTable.Rows.Add();
             transitionTable.Rows[0][0] = string.Join(",", stateList.FirstOrDefault(x => x.Key == DFATree.First).Key);
             TransitionTable(DFATree, stateList, 0, DFATree.First);            
@@ -117,6 +114,7 @@ namespace LFAProject
                 TransitionTable(DFATree, stateList, numRow, key);
                 key = stateList.FinishTransitions<List<int>, bool>();
             }
+            finalStates = dfa.GetFinalStates(stateList, Follows.Last().Key);
             dataGridView3.DataSource = transitionTable;
         }
 
@@ -238,25 +236,25 @@ namespace LFAProject
         private readonly FileClass fileClass = new FileClass();
         private void button3_Click(object sender, EventArgs e)
         {
-            string programFile = "C:\\VSprojects\\LFAProject\\LFAProject\\bin\\Debug\\Scanner\\Scanner\\Program.cs";
-            fileClass.IsFileTypeCorrect(programFile, ".cs", ref error);
+            //string programFile = "C:\\VSprojects\\LFAProject\\LFAProject\\bin\\Debug\\Scanner\\Scanner\\Program.cs";
+            string ouputTest = "C:\\Users\\Brenner\\Downloads\\GRAMATICA - pruebas Fase II\\ouputTest.txt";
+            //fileClass.IsFileTypeCorrect(programFile, ".cs", ref error);
+            fileClass.IsFileTypeCorrect(ouputTest, ".txt", ref error);
             if (error == "Bad filetype")
             {
                 MessageBox.Show("Select Program.cs", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-            else if (error == "Null file")
-            {
-                MessageBox.Show("Program.cs is empty", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            //else if (error == "Null file")
+            //{
+            //    MessageBox.Show("Program.cs is empty", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            //}
             else
             {
-                //File.WriteAllText(programFile, string.Empty);                                
-                //byte[] bytes = Encoding.ASCII.GetBytes(cases);
-                //int result = BitConverter.ToInt32(bytes, 0);
-                string inputString = "Program x a:=b c=d const a";
-                inputString = inputString.Replace(" ", "");
-                byte[] bytes = Encoding.ASCII.GetBytes(inputString);
-                Queue<byte> inputQ = new Queue<byte>(bytes);
+                //string inputString = "Program x a:=b c=d const a";
+                //inputString = inputString.Replace(" ", "");
+                //byte[] bytes = Encoding.ASCII.GetBytes(inputString);
+                //Queue<byte> inputQ = new Queue<byte>(bytes);
+                File.WriteAllText(ouputTest, string.Empty);
                 Dictionary<string, List<string>> setsRanges = dfa.GetSetsRanges(fileName, addedTSigns);
                 Dictionary<int, Dictionary<List<string>, int>> transitionsDic = new Dictionary<int, Dictionary<List<string>, int>>();
                 List<string> stateListKeys = new List<string>();
@@ -295,108 +293,157 @@ namespace LFAProject
                 string cases = string.Empty; 
                 foreach (var states in transitionsDic)
                 {
-                    var lastTransition = states.Value.Last();
-                    string ifs = string.Empty;
-                    foreach (var transition in states.Value)
-                    {
-                        var lastState = transition.Key.Last();
-                        string ifcondition = string.Empty;
-                        foreach (var state in transition.Key)
+                    if (states.Value.Count() > 0)
+                    {                        
+                        var lastTransition = states.Value.Last();
+                        var firstTransition = states.Value.First();
+                        
+                        string ifs = string.Empty;
+                        foreach (var transition in states.Value)
                         {
-                            if (transition.Key.Count() > 1)
+                            var lastState = transition.Key.Last();
+                            string ifcondition = string.Empty;
+                            foreach (var state in transition.Key)
                             {
-                                if (state.Equals(lastState))
+                                if (transition.Key.Count() > 1)
+                                {
+                                    if (state.Equals(lastState))
+                                    {
+                                        if (state.Contains("-"))
+                                        {
+                                            var rangesArr = state.Split('-');
+                                            ifcondition += $" inputQ.Peek() >= {rangesArr[0]} && inputQ.Peek() <= {rangesArr[1]}";
+                                        }
+                                        else
+                                        {
+                                            ifcondition += $" inputQ.Peek() == {state}";
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if (state.Contains("-"))
+                                        {
+                                            var rangesArr = state.Split('-');
+                                            ifcondition += $" inputQ.Peek() >= {rangesArr[0]} && inputQ.Peek() <= {rangesArr[1]} ||";
+                                        }
+                                        else
+                                        {
+                                            ifcondition += $" inputQ.Peek() == {state} ||";
+                                        }
+                                    }
+                                }
+                                else
                                 {
                                     if (state.Contains("-"))
                                     {
                                         var rangesArr = state.Split('-');
-                                        ifcondition += $" inputQ.Peek() >= {rangesArr[0]} && inputQ.Peek <= {rangesArr[1]}";
+                                        ifcondition += $" inputQ.Peek() >= {rangesArr[0]} && inputQ.Peek() <= {rangesArr[1]}";
                                     }
                                     else
                                     {
                                         ifcondition += $" inputQ.Peek() == {state}";
                                     }
                                 }
+
+                            }
+                            if (transition.Equals(firstTransition) && transition.Equals(lastTransition))//JFKL;ASJFLSA;FJS
+                            {
+                                finalStates.TryGetValue(transition.Value, out bool finalState);
+                                if (finalState)
+                                {
+                                    ifs += Environment.NewLine + @"if(" + ifcondition + @"){" + Environment.NewLine + @"state=" + transition.Value + @";" + Environment.NewLine
+                                    + @"inputQ.Dequeue();" + Environment.NewLine + @"}" + Environment.NewLine + @"else{" + Environment.NewLine + @"state=0;" + Environment.NewLine + @"}";
+                                }
                                 else
                                 {
-                                    if (state.Contains("-"))
-                                    {
-                                        var rangesArr = state.Split('-');
-                                        ifcondition += $" inputQ.Peek() >= {rangesArr[0]} && inputQ.Peek <= {rangesArr[1]} ||";
-                                    }
-                                    else
-                                    {
-                                        ifcondition += $" inputQ.Peek() == {state} ||";
-                                    }
-                                }
+                                    ifs += Environment.NewLine + @"if(" + ifcondition + @"){" + Environment.NewLine + @"estado=" + transition.Value + @";" + Environment.NewLine
+                                    + @"inputQ.Dequeue();" + Environment.NewLine + @"}" + Environment.NewLine + @"else{" + Environment.NewLine + @"error=true; end=true;" + Environment.NewLine + @"}";
+                                }                                
                             }
                             else
                             {
-                                if (state.Contains("-"))
+                                if (transition.Equals(lastTransition))
                                 {
-                                    var rangesArr = state.Split('-');
-                                    ifcondition += $" inputQ.Peek() >= {rangesArr[0]} && inputQ.Peek <= {rangesArr[1]}";
+                                    finalStates.TryGetValue(transition.Value, out bool finalState);
+                                    if (finalState)
+                                    {
+                                        ifs += Environment.NewLine + @"else if(" + ifcondition + @"){" + Environment.NewLine + @"state=" + transition.Value + @";" + Environment.NewLine
+                                        + @"inputQ.Dequeue();" + Environment.NewLine + @"}" + Environment.NewLine + @"else{" + Environment.NewLine + @"state=0;" + Environment.NewLine + @"}";
+                                    }
+                                    else
+                                    {
+                                        ifs += Environment.NewLine + @"else if(" + ifcondition + @"){" + Environment.NewLine + @"estado=" + transition.Value + @";" + Environment.NewLine
+                                    + @"inputQ.Dequeue();" + Environment.NewLine + @"}" + Environment.NewLine + @"else{" + Environment.NewLine + @"error=true; end=true;" + Environment.NewLine + @"}";
+                                    }
+                                }
+                                else if (transition.Equals(firstTransition))
+                                {
+                                    ifs += Environment.NewLine + @"if(" + ifcondition + @"){" + Environment.NewLine + @"state=" + transition.Value + @";" + Environment.NewLine + @"inputQ.Dequeue();"
+                                    + Environment.NewLine + @"}";
                                 }
                                 else
                                 {
-                                    ifcondition += $" inputQ.Peek() == {state}";
+                                    ifs += Environment.NewLine + @"else if(" + ifcondition + @"){" + Environment.NewLine + @"state=" + transition.Value + @";" + Environment.NewLine + @"inputQ.Dequeue();"
+                                    + Environment.NewLine + @"}";
                                 }
                             }
-
+                            //else
+                            //{
+                                
+                            //    finalStates.TryGetValue(transition.Value, out bool finalState);
+                            //    if (finalState)
+                            //    {
+                            //        ifs += Environment.NewLine + @"if(" + ifcondition + @"){" + Environment.NewLine + @"state=" + transition.Value + @";" + Environment.NewLine
+                            //        + @"inputQ.Dequeue();" + Environment.NewLine + @"}" + Environment.NewLine + @"else{" + Environment.NewLine + @"state=0;" + Environment.NewLine + @"}";
+                            //    }
+                            //    else
+                            //    {
+                            //        ifs += Environment.NewLine + @"if(" + ifcondition + @"){" + Environment.NewLine + @"estado=" + transition.Value + @";" + Environment.NewLine
+                            //    + @"inputQ.Dequeue();" + Environment.NewLine + @"}" + Environment.NewLine + @"else{" + Environment.NewLine + @"error=true; end=true;" + Environment.NewLine + @"}";
+                            //    } 
+                            //}
+                            
                         }
-                        if (transition.Equals(lastTransition))
-                        {
-                            ifs += Environment.NewLine + @"else{" + Environment.NewLine + @"" + Environment.NewLine + @"}";
-                        }
-                        ifs += Environment.NewLine + @"if(" + ifcondition + @"){" + Environment.NewLine + @"estado=" + transition.Value + @";" + Environment.NewLine + @"inputQ.Dequeue();"
-                        + Environment.NewLine + @"}";
-                    }
-                    //cases += Environment.NewLine + @"case " + state.Key + @":" + Environment.NewLine + @"" + Environment.NewLine + @"break;";
+                        cases += Environment.NewLine + @"case " + states.Key + @":" + Environment.NewLine + ifs + Environment.NewLine + @"break;";
+                    }                    
                     //HAVE TO CHECK IF IS THE FIRST TRANSITION, ADD ELSE IF AFTER THAT. ADD ELSE AFTER LAST TRANSITION. IF THERE IS NO MATCH AND 
                     //CURRENT STATE IS FINAL STATE, THEN RESET, OTHERWHISE, ERROR.
+                }                
+                File.WriteAllText(ouputTest, @"using System;
+                using System.Collections.Generic;
+                using System.Linq;
+                using System.Text;
+                using System.Threading.Tasks;
+
+                namespace Scanner
+                {
+                    class Program
+                    {
+                        static void Main(string[] args)
+                        {
+                          Console.WriteLine(""Ingrese la cadena a analizar:"");
+                          string inputString = Console.ReadLine();
+                inputString=inputString.Replace("" "", """");
+                byte[] bytes = Encoding.ASCII.GetBytes(inputString);
+                Queue<byte> inputQ = new Queue<byte>(bytes);
+                bool error = false;
+                int state = 0;
+                bool end = false;
+                while (inputQ.Count() != 0 && error != true && end != true)
+                {"+Environment.NewLine+@"switch (state){"+Environment.NewLine+cases +Environment.NewLine+@"}
+                if (error == true)
+                {
+                    Console.WriteLine(""La cadena fue aceptada."");
                 }
-
-                //if (inputQ.Peek() >= 65 && inputQ.Peek() <= 90 || inputQ.Peek() == 95 || inputQ.Peek() >= 97 && inputQ.Peek() <= 122)
-                //{
-
-                //}
-                //cases += Environment.NewLine + @"case " + numCase + @":" + Environment.NewLine + @"" + Environment.NewLine + @"break;";
-                
-                //File.WriteAllText(programFile, @"using System;
-                //using System.Collections.Generic;
-                //using System.Linq;
-                //using System.Text;
-                //using System.Threading.Tasks;
-
-                //namespace Scanner
-                //{
-                //    class Program
-                //    {
-                //        static void Main(string[] args)
-                //        {
-                //          Console.WriteLine("Ingrese la cadena a analizar:");
-                //          string inputString = Console.ReadLine();
-                //          inputString.replace(" ", "");
-                //          byte[] bytes = Encoding.ASCII.GetBytes(inputString);
-                //          Queue<byte> inputQ = new Queue<byte>(bytes);
-                //          bool error = false;
-                //          int state = 0;
-                //          while (inputQ.count() != 0 && error != true && end != true)
-                //          {
-                //              CASES
-                //          }
-                //          if (error == true)
-                //          {
-                //              Console.WriteLine("La cadena fue aceptada.");
-                //          }
-                //          else
-                //          {
-                //              Console.WriteLine("La cadena no fue aceptada.");
-                //          }
-                //          Console.ReadKey;
-                //        }
-                //    }
-                //}");                
+                else
+                {
+                    Console.WriteLine(""La cadena no fue aceptada."");
+                }
+                Console.ReadKey();
+            }
+        }
+    }
+}");                
             }            
         }
     }
