@@ -30,7 +30,7 @@ namespace LFAProject
             return addedTSigns;
         }
 
-        public Dictionary<string, List<string>> GetSetsRange(string FileName, List<string> addedTSigns)
+        public Dictionary<string, List<string>> GetSetsRanges(string FileName, List<string> addedTSigns)
         {            
             Dictionary<string, List<string>> sets = new Dictionary<string, List<string>>();
             addedTSigns.Sort();

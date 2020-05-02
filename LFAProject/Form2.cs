@@ -257,30 +257,111 @@ namespace LFAProject
                 inputString = inputString.Replace(" ", "");
                 byte[] bytes = Encoding.ASCII.GetBytes(inputString);
                 Queue<byte> inputQ = new Queue<byte>(bytes);
-                Dictionary<string, List<string>> setsRanges = dfa.GetSetsRange(fileName, addedTSigns);
-                string cases = string.Empty;
-                string ifs = string.Empty;
+                Dictionary<string, List<string>> setsRanges = dfa.GetSetsRanges(fileName, addedTSigns);
+                Dictionary<int, Dictionary<List<string>, int>> transitionsDic = new Dictionary<int, Dictionary<List<string>, int>>();
+                List<string> stateListKeys = new List<string>();
+                foreach (var key in stateList)
+                {
+                    stateListKeys.Add(string.Join(",", key.Key));
+                }
                 foreach (DataRow row in transitionTable.Rows)
                 {
-                    foreach (string dc in row.ItemArray)
+                    int numCase = 0;
+                    Dictionary<List<string>, int> subDictionary = new Dictionary<List<string>, int>();                                        
+                    foreach (DataColumn dc in transitionTable.Columns)
                     {
-                        List<string> dcList = dc.Split(',').ToList();                        
-                        List<string> stateListKeys = new List<string>();
-                        foreach (var key in stateList)
-                        {
-                            stateListKeys.Add(string.Join(",", key.Key));
+                        if (dc.ColumnName.Equals("Estado"))
+                        {                          
+                            int rowIndex = transitionTable.Rows.IndexOf(row);
+                            List<string> dcList = row[dc.ColumnName].ToString().Split(',').ToList();                            
+                            numCase = stateListKeys.IndexOf(string.Join(",", dcList));
                         }
-                        int numCase = stateListKeys.IndexOf(string.Join(",", dcList));
-
-                        if (inputQ.Peek() >= 65 && inputQ.Peek() <=90 || inputQ.Peek() == 95 || inputQ.Peek()>=97 && inputQ.Peek()<=122)
+                        else
                         {
-
+                            List<string> symRanges = new List<string>();
+                            setsRanges.TryGetValue(dc.ColumnName, out symRanges);
+                            int rowIndex = transitionTable.Rows.IndexOf(row);
+                            List<string> dcList = row[dc.ColumnName].ToString().Split(',').ToList();                            
+                            int nextState = stateListKeys.IndexOf(string.Join(",", dcList));
+                            if (nextState > 0)
+                            {
+                                subDictionary.Add(symRanges, nextState);
+                            }                            
                         }
-                        cases += Environment.NewLine + @"case " + numCase + @":" + Environment.NewLine + @"" + Environment.NewLine + @"break;";
                     }
+                    transitionsDic.Add(numCase, subDictionary);
                 }
 
+                string cases = string.Empty; 
+                foreach (var states in transitionsDic)
+                {
+                    var lastTransition = states.Value.Last();
+                    string ifs = string.Empty;
+                    foreach (var transition in states.Value)
+                    {
+                        var lastState = transition.Key.Last();
+                        string ifcondition = string.Empty;
+                        foreach (var state in transition.Key)
+                        {
+                            if (transition.Key.Count() > 1)
+                            {
+                                if (state.Equals(lastState))
+                                {
+                                    if (state.Contains("-"))
+                                    {
+                                        var rangesArr = state.Split('-');
+                                        ifcondition += $" inputQ.Peek() >= {rangesArr[0]} && inputQ.Peek <= {rangesArr[1]}";
+                                    }
+                                    else
+                                    {
+                                        ifcondition += $" inputQ.Peek() == {state}";
+                                    }
+                                }
+                                else
+                                {
+                                    if (state.Contains("-"))
+                                    {
+                                        var rangesArr = state.Split('-');
+                                        ifcondition += $" inputQ.Peek() >= {rangesArr[0]} && inputQ.Peek <= {rangesArr[1]} ||";
+                                    }
+                                    else
+                                    {
+                                        ifcondition += $" inputQ.Peek() == {state} ||";
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                if (state.Contains("-"))
+                                {
+                                    var rangesArr = state.Split('-');
+                                    ifcondition += $" inputQ.Peek() >= {rangesArr[0]} && inputQ.Peek <= {rangesArr[1]}";
+                                }
+                                else
+                                {
+                                    ifcondition += $" inputQ.Peek() == {state}";
+                                }
+                            }
 
+                        }
+                        if (transition.Equals(lastTransition))
+                        {
+                            ifs += Environment.NewLine + @"else{" + Environment.NewLine + @"" + Environment.NewLine + @"}";
+                        }
+                        ifs += Environment.NewLine + @"if(" + ifcondition + @"){" + Environment.NewLine + @"estado=" + transition.Value + @";" + Environment.NewLine + @"inputQ.Dequeue();"
+                        + Environment.NewLine + @"}";
+                    }
+                    //cases += Environment.NewLine + @"case " + state.Key + @":" + Environment.NewLine + @"" + Environment.NewLine + @"break;";
+                    //HAVE TO CHECK IF IS THE FIRST TRANSITION, ADD ELSE IF AFTER THAT. ADD ELSE AFTER LAST TRANSITION. IF THERE IS NO MATCH AND 
+                    //CURRENT STATE IS FINAL STATE, THEN RESET, OTHERWHISE, ERROR.
+                }
+
+                //if (inputQ.Peek() >= 65 && inputQ.Peek() <= 90 || inputQ.Peek() == 95 || inputQ.Peek() >= 97 && inputQ.Peek() <= 122)
+                //{
+
+                //}
+                //cases += Environment.NewLine + @"case " + numCase + @":" + Environment.NewLine + @"" + Environment.NewLine + @"break;";
+                
                 //File.WriteAllText(programFile, @"using System;
                 //using System.Collections.Generic;
                 //using System.Linq;
