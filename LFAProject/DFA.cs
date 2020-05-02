@@ -30,6 +30,73 @@ namespace LFAProject
             return addedTSigns;
         }
 
+        public Dictionary<string, List<string>> GetSetsRange(string FileName, List<string> addedTSigns)
+        {            
+            Dictionary<string, List<string>> sets = new Dictionary<string, List<string>>();
+            addedTSigns.Sort();
+            addedTSigns.Reverse();
+            Queue<string> setsQ = new Queue<string>(addedTSigns);            
+            StreamReader line = new StreamReader(FileName);
+            string readLine = line.ReadLine();            
+            while (!readLine.Contains("TOKENS"))
+            {
+                List<string> ranges = new List<string>();
+                if (!readLine.Contains("SETS") && !string.IsNullOrEmpty(readLine))
+                {
+                    readLine = tools.RemoveUnwantedChars(readLine.Substring(readLine.IndexOf("=") + 1));
+                    readLine = readLine.Replace("..", "-");
+                    readLine = readLine.Replace(@"'", "");                        
+                    if (readLine.Contains("+"))
+                    {
+                        var rangeArray = readLine.Split('+');
+                        foreach (var range in rangeArray)
+                        {
+                            if (range.Contains("-"))
+                            {
+                                var subRangeArr = range.Split('-');
+                                string subRange = string.Empty;
+                                foreach (var sub in subRangeArr)
+                                {
+                                    int asciiValue = System.Convert.ToInt32(System.Convert.ToChar(sub));
+                                    if (!string.IsNullOrEmpty(subRange))
+                                    {
+                                        subRange += asciiValue;
+                                    }
+                                    else
+                                    {
+                                        subRange = asciiValue + "-";
+                                    }
+                                }
+                                ranges.Add(subRange);
+                            }
+                            else
+                            {
+                                ranges.Add(System.Convert.ToInt32(System.Convert.ToChar(range)).ToString());
+                            }
+                        }
+                        sets.Add(setsQ.Dequeue(), ranges);                        
+                    }
+                    else
+                    {
+                        ranges.Add(readLine);
+                        sets.Add(setsQ.Dequeue(), ranges);                        
+                    }                    
+                }
+                readLine = line.ReadLine();
+            }
+            if (setsQ.Count() != 0)
+            {               
+                while (setsQ.Count() != 0)
+                {
+                    List<string> singleRanges = new List<string>();
+                    string set=setsQ.Peek().Replace(@"'", "");
+                    singleRanges.Add(System.Convert.ToInt32(System.Convert.ToChar(set)).ToString());
+                    sets.Add(setsQ.Dequeue(), singleRanges);                    
+                }                
+            }
+            return sets;
+        }
+
         public List<string> GetRegex(string FileName, List<string> TSigns, ref string error)
         {
             List<string> tokens = new List<string>();

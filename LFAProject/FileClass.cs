@@ -27,6 +27,14 @@ namespace LFAProject
             }
         }
 
+        public void EmptyFile(string fileName, ref string error) 
+        {
+            if (true)
+            {
+
+            }
+        }
+
         /// <summary>Splits each line to tokens and compares them with the regular expression tree</summary>
         /// <param name="fileName">The file selected by the user</param>
         /// <param name="error">The error message to get</param>

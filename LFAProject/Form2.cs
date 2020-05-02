@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Windows.Forms;
 
 namespace LFAProject
@@ -16,6 +18,8 @@ namespace LFAProject
         private readonly DataTable transitionTable = new DataTable();
         readonly Dictionary<int, List<int>> Follows = new Dictionary<int, List<int>>();
         readonly Dictionary<string, List<int>> SymStates = new Dictionary<string, List<int>>();
+        readonly Dictionary<List<int>, bool> stateList = new Dictionary<List<int>, bool>();
+        List<string> addedTSigns = new List<string>();
         string error = string.Empty;
         BTreeNode DFATree = new BTreeNode();
         public DataTable FollowTable1 { get; } = new DataTable();
@@ -46,7 +50,7 @@ namespace LFAProject
             {
                 return;
             }
-            List<string> addedTSigns = dfa.TSigns(fileName);
+            addedTSigns = dfa.TSigns(fileName);
             List<string> Tokens = dfa.GetRegex(fileName, addedTSigns, ref error);
             if (!string.IsNullOrEmpty(error)) 
             {
@@ -95,11 +99,12 @@ namespace LFAProject
             {
                 transitionTable.Columns.Add(Tsign);
                 SymStates.Add(Tsign, new List<int>());
-            }            
-            Dictionary<List<int>, bool> stateList = new Dictionary<List<int>, bool>()
-            {
-                {DFATree.First, false}
-            };
+            }
+            //Dictionary<List<int>, bool> stateList = new Dictionary<List<int>, bool>()
+            //{
+            //    {DFATree.First, false}
+            //};
+            stateList.Add(DFATree.First, false);
             transitionTable.Rows.Add();
             transitionTable.Rows[0][0] = string.Join(",", stateList.FirstOrDefault(x => x.Key == DFATree.First).Key);
             TransitionTable(DFATree, stateList, 0, DFATree.First);            
@@ -228,6 +233,90 @@ namespace LFAProject
                 MessageBox.Show("No se ha cargado el archivo.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
+        }
+
+        private readonly FileClass fileClass = new FileClass();
+        private void button3_Click(object sender, EventArgs e)
+        {
+            string programFile = "C:\\VSprojects\\LFAProject\\LFAProject\\bin\\Debug\\Scanner\\Scanner\\Program.cs";
+            fileClass.IsFileTypeCorrect(programFile, ".cs", ref error);
+            if (error == "Bad filetype")
+            {
+                MessageBox.Show("Select Program.cs", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            else if (error == "Null file")
+            {
+                MessageBox.Show("Program.cs is empty", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            else
+            {
+                //File.WriteAllText(programFile, string.Empty);                                
+                //byte[] bytes = Encoding.ASCII.GetBytes(cases);
+                //int result = BitConverter.ToInt32(bytes, 0);
+                string inputString = "Program x a:=b c=d const a";
+                inputString = inputString.Replace(" ", "");
+                byte[] bytes = Encoding.ASCII.GetBytes(inputString);
+                Queue<byte> inputQ = new Queue<byte>(bytes);
+                Dictionary<string, List<string>> setsRanges = dfa.GetSetsRange(fileName, addedTSigns);
+                string cases = string.Empty;
+                string ifs = string.Empty;
+                foreach (DataRow row in transitionTable.Rows)
+                {
+                    foreach (string dc in row.ItemArray)
+                    {
+                        List<string> dcList = dc.Split(',').ToList();                        
+                        List<string> stateListKeys = new List<string>();
+                        foreach (var key in stateList)
+                        {
+                            stateListKeys.Add(string.Join(",", key.Key));
+                        }
+                        int numCase = stateListKeys.IndexOf(string.Join(",", dcList));
+
+                        if (inputQ.Peek() >= 65 && inputQ.Peek() <=90 || inputQ.Peek() == 95 || inputQ.Peek()>=97 && inputQ.Peek()<=122)
+                        {
+
+                        }
+                        cases += Environment.NewLine + @"case " + numCase + @":" + Environment.NewLine + @"" + Environment.NewLine + @"break;";
+                    }
+                }
+
+
+                //File.WriteAllText(programFile, @"using System;
+                //using System.Collections.Generic;
+                //using System.Linq;
+                //using System.Text;
+                //using System.Threading.Tasks;
+
+                //namespace Scanner
+                //{
+                //    class Program
+                //    {
+                //        static void Main(string[] args)
+                //        {
+                //          Console.WriteLine("Ingrese la cadena a analizar:");
+                //          string inputString = Console.ReadLine();
+                //          inputString.replace(" ", "");
+                //          byte[] bytes = Encoding.ASCII.GetBytes(inputString);
+                //          Queue<byte> inputQ = new Queue<byte>(bytes);
+                //          bool error = false;
+                //          int state = 0;
+                //          while (inputQ.count() != 0 && error != true && end != true)
+                //          {
+                //              CASES
+                //          }
+                //          if (error == true)
+                //          {
+                //              Console.WriteLine("La cadena fue aceptada.");
+                //          }
+                //          else
+                //          {
+                //              Console.WriteLine("La cadena no fue aceptada.");
+                //          }
+                //          Console.ReadKey;
+                //        }
+                //    }
+                //}");                
+            }            
         }
     }
 }
