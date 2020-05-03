@@ -236,27 +236,18 @@ namespace LFAProject
         private readonly FileClass fileClass = new FileClass();
         private void button3_Click(object sender, EventArgs e)
         {
-            string programFile = "C:\\VSprojects\\LFAProject\\LFAProject\\bin\\Debug\\Scanner\\Scanner\\Program.cs";
-            //string ouputTest = "C:\\Users\\Brenner\\Downloads\\GRAMATICA - pruebas Fase II\\ouputTest.txt";
-            fileClass.IsFileTypeCorrect(programFile, ".cs", ref error);
-            //fileClass.IsFileTypeCorrect(ouputTest, ".txt", ref error);
+            string programFile = "C:\\VSprojects\\LFAProject\\LFAProject\\bin\\Debug\\Scanner\\Scanner\\Program.cs";            
+            fileClass.IsFileTypeCorrect(programFile, ".cs", ref error);            
             if (error == "Bad filetype")
             {
                 MessageBox.Show("Select Program.cs", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-            //else if (error == "Null file")
-            //{
-            //    MessageBox.Show("Program.cs is empty", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            //}
+            }            
             else
-            {
-                //string inputString = "Program x a:=b c=d const a";
-                //inputString = inputString.Replace(" ", "");
-                //byte[] bytes = Encoding.ASCII.GetBytes(inputString);
-                //Queue<byte> inputQ = new Queue<byte>(bytes);
+            {                
                 File.WriteAllText(programFile, string.Empty);
                 Dictionary<string, List<string>> setsRanges = dfa.GetSetsRanges(fileName, addedTSigns);
                 Dictionary<int, Dictionary<List<string>, int>> transitionsDic = new Dictionary<int, Dictionary<List<string>, int>>();
+                Dictionary<int, string> reservedWords = dfa.GetReservedWords(fileName);
                 List<string> stateListKeys = new List<string>();
                 foreach (var key in stateList)
                 {
@@ -443,7 +434,7 @@ namespace LFAProject
             
         }
     }
-}");                
+}");              
             }            
         }
     }

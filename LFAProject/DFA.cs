@@ -30,6 +30,27 @@ namespace LFAProject
             return addedTSigns;
         }
 
+        public Dictionary<int, string> GetReservedWords(string FileName) 
+        {
+            Dictionary<int, string> reservedWords = new Dictionary<int, string>();
+            StreamReader line = new StreamReader(FileName);
+            string readLine = line.ReadLine();
+            while (!readLine.Contains("ACTIONS"))
+                readLine = line.ReadLine();
+            while (!readLine.Contains("}"))
+            {
+                if (!string.IsNullOrEmpty(readLine) && !readLine.Contains("{") && !readLine.Contains("RESERVADAS()") && !readLine.Contains("ACTIONS"))
+                {
+                    readLine = tools.RemoveUnwantedChars(readLine);
+                    readLine = readLine.Replace("'", "");
+                    var reservedW = readLine.Split('=');
+                    reservedWords.Add(int.Parse(reservedW[0]), reservedW[1].ToLower());                    
+                }
+                readLine = line.ReadLine();
+            }            
+            return reservedWords;
+        }
+
         public Dictionary<string, List<string>> GetSetsRanges(string FileName, List<string> addedTSigns)
         {            
             Dictionary<string, List<string>> sets = new Dictionary<string, List<string>>();
