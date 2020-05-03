@@ -236,10 +236,10 @@ namespace LFAProject
         private readonly FileClass fileClass = new FileClass();
         private void button3_Click(object sender, EventArgs e)
         {
-            //string programFile = "C:\\VSprojects\\LFAProject\\LFAProject\\bin\\Debug\\Scanner\\Scanner\\Program.cs";
-            string ouputTest = "C:\\Users\\Brenner\\Downloads\\GRAMATICA - pruebas Fase II\\ouputTest.txt";
-            //fileClass.IsFileTypeCorrect(programFile, ".cs", ref error);
-            fileClass.IsFileTypeCorrect(ouputTest, ".txt", ref error);
+            string programFile = "C:\\VSprojects\\LFAProject\\LFAProject\\bin\\Debug\\Scanner\\Scanner\\Program.cs";
+            //string ouputTest = "C:\\Users\\Brenner\\Downloads\\GRAMATICA - pruebas Fase II\\ouputTest.txt";
+            fileClass.IsFileTypeCorrect(programFile, ".cs", ref error);
+            //fileClass.IsFileTypeCorrect(ouputTest, ".txt", ref error);
             if (error == "Bad filetype")
             {
                 MessageBox.Show("Select Program.cs", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -254,7 +254,7 @@ namespace LFAProject
                 //inputString = inputString.Replace(" ", "");
                 //byte[] bytes = Encoding.ASCII.GetBytes(inputString);
                 //Queue<byte> inputQ = new Queue<byte>(bytes);
-                File.WriteAllText(ouputTest, string.Empty);
+                File.WriteAllText(programFile, string.Empty);
                 Dictionary<string, List<string>> setsRanges = dfa.GetSetsRanges(fileName, addedTSigns);
                 Dictionary<int, Dictionary<List<string>, int>> transitionsDic = new Dictionary<int, Dictionary<List<string>, int>>();
                 List<string> stateListKeys = new List<string>();
@@ -293,12 +293,12 @@ namespace LFAProject
                 string cases = string.Empty; 
                 foreach (var states in transitionsDic)
                 {
+                    string ifs = string.Empty;
                     if (states.Value.Count() > 0)
                     {                        
                         var lastTransition = states.Value.Last();
-                        var firstTransition = states.Value.First();
+                        var firstTransition = states.Value.First();                        
                         
-                        string ifs = string.Empty;
                         foreach (var transition in states.Value)
                         {
                             var lastState = transition.Key.Last();
@@ -348,7 +348,7 @@ namespace LFAProject
                             }
                             if (transition.Equals(firstTransition) && transition.Equals(lastTransition))//JFKL;ASJFLSA;FJS
                             {
-                                finalStates.TryGetValue(transition.Value, out bool finalState);
+                                finalStates.TryGetValue(states.Key, out bool finalState);//finalStates.TryGetValue(transition.Value, out bool finalState);
                                 if (finalState)
                                 {
                                     ifs += Environment.NewLine + @"if(" + ifcondition + @"){" + Environment.NewLine + @"state=" + transition.Value + @";" + Environment.NewLine
@@ -356,15 +356,15 @@ namespace LFAProject
                                 }
                                 else
                                 {
-                                    ifs += Environment.NewLine + @"if(" + ifcondition + @"){" + Environment.NewLine + @"estado=" + transition.Value + @";" + Environment.NewLine
-                                    + @"inputQ.Dequeue();" + Environment.NewLine + @"}" + Environment.NewLine + @"else{" + Environment.NewLine + @"error=true; end=true;" + Environment.NewLine + @"}";
+                                    ifs += Environment.NewLine + @"if(" + ifcondition + @"){" + Environment.NewLine + @"state=" + transition.Value + @";" + Environment.NewLine
+                                    + @"inputQ.Dequeue();" + Environment.NewLine + @"}" + Environment.NewLine + @"else{" + Environment.NewLine + @"error=true;" + Environment.NewLine + @"}";
                                 }                                
                             }
                             else
                             {
                                 if (transition.Equals(lastTransition))
                                 {
-                                    finalStates.TryGetValue(transition.Value, out bool finalState);
+                                    finalStates.TryGetValue(states.Key, out bool finalState);//finalStates.TryGetValue(transition.Value, out bool finalState);
                                     if (finalState)
                                     {
                                         ifs += Environment.NewLine + @"else if(" + ifcondition + @"){" + Environment.NewLine + @"state=" + transition.Value + @";" + Environment.NewLine
@@ -372,8 +372,8 @@ namespace LFAProject
                                     }
                                     else
                                     {
-                                        ifs += Environment.NewLine + @"else if(" + ifcondition + @"){" + Environment.NewLine + @"estado=" + transition.Value + @";" + Environment.NewLine
-                                    + @"inputQ.Dequeue();" + Environment.NewLine + @"}" + Environment.NewLine + @"else{" + Environment.NewLine + @"error=true; end=true;" + Environment.NewLine + @"}";
+                                        ifs += Environment.NewLine + @"else if(" + ifcondition + @"){" + Environment.NewLine + @"state=" + transition.Value + @";" + Environment.NewLine
+                                    + @"inputQ.Dequeue();" + Environment.NewLine + @"}" + Environment.NewLine + @"else{" + Environment.NewLine + @"error=true;" + Environment.NewLine + @"}";
                                     }
                                 }
                                 else if (transition.Equals(firstTransition))
@@ -386,30 +386,25 @@ namespace LFAProject
                                     ifs += Environment.NewLine + @"else if(" + ifcondition + @"){" + Environment.NewLine + @"state=" + transition.Value + @";" + Environment.NewLine + @"inputQ.Dequeue();"
                                     + Environment.NewLine + @"}";
                                 }
-                            }
-                            //else
-                            //{
-                                
-                            //    finalStates.TryGetValue(transition.Value, out bool finalState);
-                            //    if (finalState)
-                            //    {
-                            //        ifs += Environment.NewLine + @"if(" + ifcondition + @"){" + Environment.NewLine + @"state=" + transition.Value + @";" + Environment.NewLine
-                            //        + @"inputQ.Dequeue();" + Environment.NewLine + @"}" + Environment.NewLine + @"else{" + Environment.NewLine + @"state=0;" + Environment.NewLine + @"}";
-                            //    }
-                            //    else
-                            //    {
-                            //        ifs += Environment.NewLine + @"if(" + ifcondition + @"){" + Environment.NewLine + @"estado=" + transition.Value + @";" + Environment.NewLine
-                            //    + @"inputQ.Dequeue();" + Environment.NewLine + @"}" + Environment.NewLine + @"else{" + Environment.NewLine + @"error=true; end=true;" + Environment.NewLine + @"}";
-                            //    } 
-                            //}
-                            
+                            } 
                         }
                         cases += Environment.NewLine + @"case " + states.Key + @":" + Environment.NewLine + ifs + Environment.NewLine + @"break;";
+                    }
+                    else
+                    {    
+                        string ifcondition = string.Empty;    
+                        finalStates.TryGetValue(states.Key, out bool finalState);
+                        if (finalState)
+                        {
+                            cases += Environment.NewLine + @"case " + states.Key + @":" + Environment.NewLine + @"state=0;" + Environment.NewLine + @"break;";
+                        }
+                        else
+                        {
+                            cases += Environment.NewLine + @"case " + states.Key + @":" + Environment.NewLine + @"error=true;" + Environment.NewLine + @"break;";
+                        }    
                     }                    
-                    //HAVE TO CHECK IF IS THE FIRST TRANSITION, ADD ELSE IF AFTER THAT. ADD ELSE AFTER LAST TRANSITION. IF THERE IS NO MATCH AND 
-                    //CURRENT STATE IS FINAL STATE, THEN RESET, OTHERWHISE, ERROR.
                 }                
-                File.WriteAllText(ouputTest, @"using System;
+                File.WriteAllText(programFile, @"using System;
                 using System.Collections.Generic;
                 using System.Linq;
                 using System.Text;
@@ -421,17 +416,20 @@ namespace LFAProject
                     {
                         static void Main(string[] args)
                         {
-                          Console.WriteLine(""Ingrese la cadena a analizar:"");
-                          string inputString = Console.ReadLine();
+                          string inputString = string.Empty;
+                          while (!inputString.Equals(""\n""))
+            {
+                    Console.WriteLine(""Ingrese la cadena a analizar:"");
+                          inputString = Console.ReadLine();
                 inputString=inputString.Replace("" "", """");
                 byte[] bytes = Encoding.ASCII.GetBytes(inputString);
                 Queue<byte> inputQ = new Queue<byte>(bytes);
                 bool error = false;
-                int state = 0;
-                bool end = false;
-                while (inputQ.Count() != 0 && error != true && end != true)
-                {"+Environment.NewLine+@"switch (state){"+Environment.NewLine+cases +Environment.NewLine+@"}
-                if (error == true)
+                int state = 0;                
+                while (inputQ.Count() != 0 && error != true)
+                {"+Environment.NewLine+@"switch (state){"+Environment.NewLine+cases +Environment.NewLine+ @"}
+            }
+                if (error == false)
                 {
                     Console.WriteLine(""La cadena fue aceptada."");
                 }
@@ -440,7 +438,9 @@ namespace LFAProject
                     Console.WriteLine(""La cadena no fue aceptada."");
                 }
                 Console.ReadKey();
+                Console.Clear();
             }
+            
         }
     }
 }");                

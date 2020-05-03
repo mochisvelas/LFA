@@ -78,7 +78,28 @@ namespace LFAProject
                     }
                     else
                     {
-                        ranges.Add(readLine);
+                        if (readLine.Contains("-"))
+                        {
+                            var subRangeArr = readLine.Split('-');
+                            string subRange = string.Empty;
+                            foreach (var sub in subRangeArr)
+                            {
+                                int asciiValue = System.Convert.ToChar(sub);
+                                if (!string.IsNullOrEmpty(subRange))
+                                {
+                                    subRange += asciiValue;
+                                }
+                                else
+                                {
+                                    subRange = asciiValue + "-";
+                                }
+                            }
+                            ranges.Add(subRange);
+                        }
+                        else
+                        {
+                            ranges.Add(System.Convert.ToInt32(System.Convert.ToChar(readLine)).ToString());
+                        }                        
                         sets.Add(setsQ.Dequeue(), ranges);                        
                     }                    
                 }
