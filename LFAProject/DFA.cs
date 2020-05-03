@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.IO;
+using System.Text.RegularExpressions;
 
 namespace LFAProject
 {
@@ -65,8 +66,14 @@ namespace LFAProject
                 if (!readLine.Contains("SETS") && !string.IsNullOrEmpty(readLine))
                 {
                     readLine = tools.RemoveUnwantedChars(readLine.Substring(readLine.IndexOf("=") + 1));
-                    readLine = readLine.Replace("..", "-");
-                    readLine = readLine.Replace(@"'", "");                        
+                    if (readLine.Contains(".."))
+                    {
+                        readLine = readLine.Replace("..", "-");
+                    }
+                    if (readLine.Contains("'"))
+                    {
+                        readLine = readLine.Replace(@"'", "");
+                    }                       
                     if (readLine.Contains("+"))
                     {
                         var rangeArray = readLine.Split('+');
@@ -78,15 +85,30 @@ namespace LFAProject
                                 string subRange = string.Empty;
                                 foreach (var sub in subRangeArr)
                                 {
-                                    int asciiValue = System.Convert.ToChar(sub);
-                                    if (!string.IsNullOrEmpty(subRange))
+                                    if (sub.Contains("CHR"))
                                     {
-                                        subRange += asciiValue;
+                                        Regex pattern = new Regex("[CHR()]");
+                                        if (!string.IsNullOrEmpty(subRange))
+                                        {
+                                            subRange += pattern.Replace(sub, "");
+                                        }
+                                        else
+                                        {
+                                            subRange += pattern.Replace(sub, "") + "-";
+                                        }                                       
                                     }
                                     else
                                     {
-                                        subRange = asciiValue + "-";
-                                    }
+                                        int asciiValue = System.Convert.ToChar(sub);
+                                        if (!string.IsNullOrEmpty(subRange))
+                                        {
+                                            subRange += asciiValue;
+                                        }
+                                        else
+                                        {
+                                            subRange = asciiValue + "-";
+                                        }
+                                    }                                    
                                 }
                                 ranges.Add(subRange);
                             }
@@ -105,15 +127,30 @@ namespace LFAProject
                             string subRange = string.Empty;
                             foreach (var sub in subRangeArr)
                             {
-                                int asciiValue = System.Convert.ToChar(sub);
-                                if (!string.IsNullOrEmpty(subRange))
+                                if (sub.Contains("CHR"))
                                 {
-                                    subRange += asciiValue;
+                                    Regex pattern = new Regex("[CHR()]");
+                                    if (!string.IsNullOrEmpty(subRange))
+                                    {
+                                        subRange += pattern.Replace(sub, "");
+                                    }
+                                    else
+                                    {
+                                        subRange += pattern.Replace(sub, "") + "-";
+                                    }
                                 }
                                 else
                                 {
-                                    subRange = asciiValue + "-";
-                                }
+                                    int asciiValue = System.Convert.ToChar(sub);
+                                    if (!string.IsNullOrEmpty(subRange))
+                                    {
+                                        subRange += asciiValue;
+                                    }
+                                    else
+                                    {
+                                        subRange = asciiValue + "-";
+                                    }
+                                }                                
                             }
                             ranges.Add(subRange);
                         }
@@ -131,7 +168,15 @@ namespace LFAProject
                 while (setsQ.Count() != 0)
                 {
                     List<string> singleRanges = new List<string>();
-                    string set=setsQ.Peek().Replace(@"'", "");
+                    string set = string.Empty;
+                    if (!string.IsNullOrEmpty(setsQ.Peek().Replace(@"'", "")))
+                    {
+                        set = setsQ.Peek().Replace("'", "");
+                    }
+                    else
+                    {
+                        set = setsQ.Peek().Replace("'''","'");
+                    }
                     singleRanges.Add(System.Convert.ToInt32(System.Convert.ToChar(set)).ToString());
                     sets.Add(setsQ.Dequeue(), singleRanges);                    
                 }                

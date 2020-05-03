@@ -291,13 +291,13 @@ namespace LFAProject
                         var firstTransition = states.Value.First();                        
                         
                         foreach (var transition in states.Value)
-                        {
-                            var lastState = transition.Key.Last();
+                        {                            
                             string ifcondition = string.Empty;
                             foreach (var state in transition.Key)
                             {
                                 if (transition.Key.Count() > 1)
                                 {
+                                    var lastState = transition.Key.Last();
                                     if (state.Equals(lastState))
                                     {
                                         if (state.Contains("-"))
