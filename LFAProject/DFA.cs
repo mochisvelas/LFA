@@ -8,6 +8,7 @@ namespace LFAProject
     class DFA
     {
         readonly Tools tools = new Tools();
+        FileClass fileHelper = new FileClass();
 
         /// <summary>Adds the terminal signs found in the SETS section</summary>
         /// <param name="FileName">File to read</param>
@@ -44,24 +45,7 @@ namespace LFAProject
                 {                    
                     var actualToken = readLine.Split(new[] { '=' }, 2);
                     string fixedToken = actualToken[1];
-                    if (fixedToken.Contains("'"))
-                    {
-                        var actualTokenArr = actualToken[1].ToCharArray();
-                        for (int i = 0; i < actualTokenArr.Length; i++)
-                        {
-                            if (actualTokenArr[i] == '\'')
-                            {
-                                actualTokenArr[i] = ' ';
-                                actualTokenArr[i + 2] = ' ';
-                                i += 2;
-                            }
-                        }
-                        fixedToken = string.Empty;
-                        for (int i = 0; i < actualTokenArr.Length; i++)
-                        {
-                            fixedToken += actualTokenArr[i];
-                        }
-                    }                    
+                    fixedToken = fileHelper.RemoveSingleQuotes(fixedToken);
                     if (fixedToken.Contains("RESERVADAS()"))
                     {
                         fixedToken = fixedToken.Replace("RESERVADAS()", "");

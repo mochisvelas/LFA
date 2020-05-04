@@ -402,6 +402,33 @@ namespace LFAProject
                 {
                     tokenWordStr += $"{Environment.NewLine}existingTokensDic.Add({tokenWord.Key},\"{tokenWord.Value}\");{Environment.NewLine}";
                 }
+                string setsRangesStr = string.Empty;
+                string rangeList = string.Empty;
+                Dictionary<string, List<string>> setsRangesDic = setsRanges;
+                Tools tools = new Tools();
+                foreach (var setRange in setsRangesDic)
+                {
+                    var lastRange = setRange.Value.Last();                    
+                    foreach (var range in setRange.Value)
+                    {
+                        if (setRange.Value.Count() > 1)
+                        {
+                            if (range == lastRange)
+                            {
+                                rangeList += $"\"{range}\"";
+                            }                            
+                            else
+                            {
+                                rangeList += $"\"{range}\",";
+                            }
+                        }
+                        else
+                        {
+                            rangeList = $"\"{range}\"";
+                        }
+                    }
+                    setsRangesStr += $"{Environment.NewLine}setsRangesDic.Add(\"{tools.RemoveUnwantedChars(fileClass.RemoveSingleQuotes(setRange.Key))}\", new List<string>(new string[] {{{rangeList}}}));{Environment.NewLine}";
+                }
                 File.WriteAllText(programFile, @"using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -437,11 +464,50 @@ namespace Scanner
                         Dictionary<int, string> existingTokensDic = new Dictionary<int, string>();"
                         +tokenWordStr+
                         @"Queue<string> tokensQ = tools.TokenizeText(inputString, existingTokensDic);
-                        while (tokensQ.Count() != 0 && error != true)
+                        Dictionary<string, List<string>> setsRangesDic = new Dictionary<string, List<string>>();"
+                        +setsRangesStr+
+                        @"while (tokensQ.Count() != 0)
+                    {
+                        var myKey = existingTokensDic.FirstOrDefault(x => x.Value.Equals(tokensQ.Peek())).Key;
+                        if (myKey>0)
                         {
-
+                            Console.WriteLine($""{ tokensQ.Dequeue()} = { myKey}"");
+                        }
+                        else
+            {
+                bool end = false;
+                foreach (var setRange in setsRangesDic)
+                {
+                    foreach (var range in setRange.Value)
+                    {
+                        int actualTokenInt = 0;
+                        if (range.Contains(""-""))
+                        {
+                            var subRange = range.Split('-');
+                            if (tokensQ.Peek().Any(x => Convert.ToInt32(x) >= int.Parse(subRange[0])) && tokensQ.Peek().Any(x => Convert.ToInt32(x) <= int.Parse(subRange[1])))
+                            {
+                                actualTokenInt = existingTokensDic.FirstOrDefault(x => x.Value.Contains(setRange.Key)).Key;
+                                Console.WriteLine($""{tokensQ.Dequeue()} = {actualTokenInt}"");
+                                end = true;
+                                break;
+                            }
+                        }
+                        else if (tokensQ.Peek().Any(x => Convert.ToInt32(x) == int.Parse(range)))
+                        {
+                            actualTokenInt = existingTokensDic.FirstOrDefault(x => x.Value.Contains(setRange.Key)).Key;
+                            Console.WriteLine($""{tokensQ.Dequeue()} = {actualTokenInt}"");
+                            end = true;
+                            break;
                         }
                     }
+                    if (end)
+                    {
+                        break;
+                    }
+                }
+            }
+        }
+    }
                     else
                     {
                         Console.WriteLine(""La cadena no fue aceptada."");
@@ -463,8 +529,14 @@ namespace Scanner
                 destDir = dlg.SelectedPath;
             }
             string srcDir = "C:\\VSprojects\\LFAProject\\LFAProject\\bin\\Debug\\Scanner";
-
-            fileClass.CopyFolder(srcDir, destDir);
+            if (!string.IsNullOrEmpty(destDir))
+            {
+                fileClass.CopyFolder(srcDir, destDir);
+            }
+            else
+            {
+                MessageBox.Show("Seleccione una dirección de destino.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 }

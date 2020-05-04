@@ -40,7 +40,7 @@ namespace LFAProject
             if (!string.IsNullOrEmpty(sourceDir) && !string.IsNullOrEmpty(destDir))
             {
                 string destination_dir = Path.Combine(destDir, "Generated Scanner");
-                string source_dir = /*@"E:\" + */sourceDir;
+                string source_dir = sourceDir;
                 if (!Directory.Exists(destination_dir))
                 {
                     Directory.CreateDirectory(destination_dir);
@@ -63,20 +63,57 @@ namespace LFAProject
 
         private static void DeleteDirectory(string dirTodelete) 
         {
-            var files = Directory.GetFiles(dirTodelete);
-            var dir = Directory.GetDirectories(dirTodelete);
-
-            foreach (var file in files)
+            try
             {
-                File.SetAttributes(file, FileAttributes.Normal);
-                File.Delete(file);
-            }
+                var files = Directory.GetFiles(dirTodelete);
+                var dir = Directory.GetDirectories(dirTodelete);
 
-            foreach (var d in dir)
-            {
-                DeleteDirectory(d);
+                foreach (var file in files)
+                {
+                    File.SetAttributes(file, FileAttributes.Normal);
+                    File.Delete(file);
+                }
+
+                foreach (var d in dir)
+                {
+                    DeleteDirectory(d);
+                }
+                Directory.Delete(dirTodelete, false);
             }
-            Directory.Delete(dirTodelete, false);
+            catch (Exception)
+            {                
+            }            
+        }
+
+        public string RemoveSingleQuotes(string previousStr) 
+        {            
+            if (previousStr.Contains("'"))
+            {
+                var previousStrArr = previousStr.ToCharArray();
+                for (int i = 0; i < previousStrArr.Length; i++)
+                {
+                    if (previousStrArr[i] == '\'')
+                    {
+                        previousStrArr[i] = ' ';
+                        previousStrArr[i + 2] = ' ';
+                        i += 2;
+                    }
+                }
+                string newStr = string.Empty;
+                for (int i = 0; i < previousStrArr.Length; i++)
+                {
+                    if (previousStrArr[i] == '"')
+                    {
+                        newStr += $"\\{previousStr[i]}";
+                    }
+                    newStr += previousStrArr[i];
+                }
+                return newStr;
+            }
+            else
+            {
+                return previousStr;
+            }
         }
     }
 }
