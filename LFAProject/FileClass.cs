@@ -35,40 +35,28 @@ namespace LFAProject
             }
         }
 
-        /// <summary>Splits each line to tokens and compares them with the regular expression tree</summary>
-        /// <param name="fileName">The file selected by the user</param>
-        /// <param name="error">The error message to get</param>
-        /// <returns>True if the tokens are compared successfully, otherwise false</returns>
-        //public bool ReadGrammar(string fileName, ref string error, BTreeNode regexTree)
-        //{
-        //    BTreeNode btree = new BTreeNode();
-        //    CheckGrammar checkgrammar = new CheckGrammar();
-        //    StreamReader grammarFile = new StreamReader(fileName);
-        //    string grammar = grammarFile.ReadToEnd();
-        //    var lines = File.ReadAllLines(fileName);
-        //    for (int i = 0; i < lines.Length; i++)
-        //    {
-        //        string copyGrammar = new string(grammar.ToCharArray());
-        //        int index = 0;
-        //        while (index != -1)
-        //        {
-        //            index = grammar.IndexOf(" ");
-        //            if (index != -1)
-        //                grammar = grammar.Remove(index, 1);
-        //            index = grammar.IndexOf("\r");
-        //            if (index != -1)
-        //                grammar = grammar.Remove(index, 1);
-        //            index = grammar.IndexOf("\t");
-        //            if (index != -1)
-        //                grammar = grammar.Remove(index, 1);
-        //        }
-        //        checkgrammar.CompareGrammar(fileName, ref error);
-        //        error += ("en la línea {0}", "i");
-        //    }
-        //    //btree.InOrderAndCompare(regexTree, grammarQ, ref error);            
-        //    return true;
-        //}
+        public void CopyFolder(string sourceDir, string destDir) 
+        {
+            if (!string.IsNullOrEmpty(sourceDir) && !string.IsNullOrEmpty(destDir))
+            {
+                string source_dir = /*@"E:\" + */sourceDir;
+                string destination_dir = /*@"C:\" +*/ destDir;
 
+                // substring is to remove destination_dir absolute path (E:\).
 
+                // Create subdirectory structure in destination    
+                foreach (string dir in Directory.GetDirectories(source_dir, "*", SearchOption.AllDirectories))
+                {
+                    Directory.CreateDirectory(Path.Combine(destination_dir, dir.Substring(source_dir.Length + 1)));
+                    // Example:
+                    //     > C:\sources (and not C:\E:\sources)
+                }
+
+                foreach (string file_name in Directory.GetFiles(source_dir, "*", SearchOption.AllDirectories))
+                {
+                    File.Copy(file_name, Path.Combine(destination_dir, file_name.Substring(source_dir.Length + 1)));
+                }
+            }  
+        }
     }
 }

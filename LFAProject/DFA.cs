@@ -31,24 +31,59 @@ namespace LFAProject
             return addedTSigns;
         }
 
-        public Dictionary<int, string> GetReservedWords(string FileName) 
+        public Dictionary<int, string> GetTokenWords(string FileName) 
         {
             Dictionary<int, string> reservedWords = new Dictionary<int, string>();
             StreamReader line = new StreamReader(FileName);
-            string readLine = line.ReadLine();
-            while (!readLine.Contains("ACTIONS"))
+            string readLine = line.ReadLine();            
+            while (!readLine.Contains("TOKENS"))
                 readLine = line.ReadLine();
+            while (!readLine.Contains("ACTIONS"))
+            {
+                if (!string.IsNullOrEmpty(readLine) && !readLine.Contains("TOKENS"))
+                {                    
+                    var actualToken = readLine.Split(new[] { '=' }, 2);
+                    string fixedToken = actualToken[1];
+                    if (fixedToken.Contains("'"))
+                    {
+                        var actualTokenArr = actualToken[1].ToCharArray();
+                        for (int i = 0; i < actualTokenArr.Length; i++)
+                        {
+                            if (actualTokenArr[i] == '\'')
+                            {
+                                actualTokenArr[i] = ' ';
+                                actualTokenArr[i + 2] = ' ';
+                                i += 2;
+                            }
+                        }
+                        fixedToken = string.Empty;
+                        for (int i = 0; i < actualTokenArr.Length; i++)
+                        {
+                            fixedToken += actualTokenArr[i];
+                        }
+                    }                    
+                    if (fixedToken.Contains("RESERVADAS()"))
+                    {
+                        fixedToken = fixedToken.Replace("RESERVADAS()", "");
+                        fixedToken = fixedToken.Replace("{", "");
+                        fixedToken = fixedToken.Replace("}", "");
+                    }
+                    fixedToken = tools.RemoveUnwantedChars(fixedToken);                    
+                    reservedWords.Add(int.Parse(tools.RemoveUnwantedChars(actualToken[0].Replace("TOKEN", ""))), fixedToken);
+                }
+                readLine = line.ReadLine();
+            }
             while (!readLine.Contains("}"))
             {
-                if (!string.IsNullOrEmpty(readLine) && !readLine.Contains("{") && !readLine.Contains("RESERVADAS()") && !readLine.Contains("ACTIONS"))
+                if (!string.IsNullOrEmpty(readLine) && !readLine.Contains("ACTIONS") && !readLine.Contains("{") && !readLine.Contains("RESERVADAS()"))
                 {
                     readLine = tools.RemoveUnwantedChars(readLine);
                     readLine = readLine.Replace("'", "");
-                    var reservedW = readLine.Split('=');
-                    reservedWords.Add(int.Parse(reservedW[0]), reservedW[1].ToLower());                    
+                    var actualToken = readLine.Split(new[] { '=' }, 2);                                        
+                    reservedWords.Add(int.Parse(tools.RemoveUnwantedChars(actualToken[0])), actualToken[1]);
                 }
                 readLine = line.ReadLine();
-            }            
+            }
             return reservedWords;
         }
 

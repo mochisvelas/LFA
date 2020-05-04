@@ -19,6 +19,7 @@ namespace LFAProject
         readonly Dictionary<int, List<int>> Follows = new Dictionary<int, List<int>>();
         readonly Dictionary<string, List<int>> SymStates = new Dictionary<string, List<int>>();
         readonly Dictionary<List<int>, bool> stateList = new Dictionary<List<int>, bool>();
+        
         Dictionary<int, bool> finalStates = new Dictionary<int, bool>();
         List<string> addedTSigns = new List<string>();
         string error = string.Empty;
@@ -51,13 +52,13 @@ namespace LFAProject
             {
                 return;
             }
-            addedTSigns = dfa.TSigns(fileName);
+            addedTSigns = dfa.TSigns(fileName);            
             List<string> Tokens = dfa.GetRegex(fileName, addedTSigns, ref error);
             if (!string.IsNullOrEmpty(error)) 
             {
                 MessageBox.Show(error, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error); 
                 return;
-            }
+            }            
             addedTSigns.Clear();
             foreach (var token in Tokens)
             {
@@ -235,19 +236,19 @@ namespace LFAProject
 
         private readonly FileClass fileClass = new FileClass();
         private void button3_Click(object sender, EventArgs e)
-        {
+        {            
             string programFile = "C:\\VSprojects\\LFAProject\\LFAProject\\bin\\Debug\\Scanner\\Scanner\\Program.cs";            
-            fileClass.IsFileTypeCorrect(programFile, ".cs", ref error);            
+            fileClass.IsFileTypeCorrect(programFile, ".cs", ref error);
             if (error == "Bad filetype")
             {
                 MessageBox.Show("Select Program.cs", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }            
+            }
             else
-            {                
+            {
                 File.WriteAllText(programFile, string.Empty);
                 Dictionary<string, List<string>> setsRanges = dfa.GetSetsRanges(fileName, addedTSigns);
                 Dictionary<int, Dictionary<List<string>, int>> transitionsDic = new Dictionary<int, Dictionary<List<string>, int>>();
-                Dictionary<int, string> reservedWords = dfa.GetReservedWords(fileName);
+                //Dictionary<int, string> reservedWords = dfa.GetReservedWords(fileName);
                 List<string> stateListKeys = new List<string>();
                 foreach (var key in stateList)
                 {
@@ -256,13 +257,13 @@ namespace LFAProject
                 foreach (DataRow row in transitionTable.Rows)
                 {
                     int numCase = 0;
-                    Dictionary<List<string>, int> subDictionary = new Dictionary<List<string>, int>();                                        
+                    Dictionary<List<string>, int> subDictionary = new Dictionary<List<string>, int>();
                     foreach (DataColumn dc in transitionTable.Columns)
                     {
                         if (dc.ColumnName.Equals("Estado"))
-                        {                          
+                        {
                             int rowIndex = transitionTable.Rows.IndexOf(row);
-                            List<string> dcList = row[dc.ColumnName].ToString().Split(',').ToList();                            
+                            List<string> dcList = row[dc.ColumnName].ToString().Split(',').ToList();
                             numCase = stateListKeys.IndexOf(string.Join(",", dcList));
                         }
                         else
@@ -270,28 +271,28 @@ namespace LFAProject
                             List<string> symRanges = new List<string>();
                             setsRanges.TryGetValue(dc.ColumnName, out symRanges);
                             int rowIndex = transitionTable.Rows.IndexOf(row);
-                            List<string> dcList = row[dc.ColumnName].ToString().Split(',').ToList();                            
+                            List<string> dcList = row[dc.ColumnName].ToString().Split(',').ToList();
                             int nextState = stateListKeys.IndexOf(string.Join(",", dcList));
                             if (nextState > 0)
                             {
                                 subDictionary.Add(symRanges, nextState);
-                            }                            
+                            }
                         }
                     }
                     transitionsDic.Add(numCase, subDictionary);
                 }
 
-                string cases = string.Empty; 
+                string cases = string.Empty;
                 foreach (var states in transitionsDic)
                 {
                     string ifs = string.Empty;
                     if (states.Value.Count() > 0)
-                    {                        
+                    {
                         var lastTransition = states.Value.Last();
-                        var firstTransition = states.Value.First();                        
-                        
+                        var firstTransition = states.Value.First();
+
                         foreach (var transition in states.Value)
-                        {                            
+                        {
                             string ifcondition = string.Empty;
                             foreach (var state in transition.Key)
                             {
@@ -349,7 +350,7 @@ namespace LFAProject
                                 {
                                     ifs += Environment.NewLine + @"if(" + ifcondition + @"){" + Environment.NewLine + @"state=" + transition.Value + @";" + Environment.NewLine
                                     + @"inputQ.Dequeue();" + Environment.NewLine + @"}" + Environment.NewLine + @"else{" + Environment.NewLine + @"error=true;" + Environment.NewLine + @"}";
-                                }                                
+                                }
                             }
                             else
                             {
@@ -377,13 +378,13 @@ namespace LFAProject
                                     ifs += Environment.NewLine + @"else if(" + ifcondition + @"){" + Environment.NewLine + @"state=" + transition.Value + @";" + Environment.NewLine + @"inputQ.Dequeue();"
                                     + Environment.NewLine + @"}";
                                 }
-                            } 
+                            }
                         }
                         cases += Environment.NewLine + @"case " + states.Key + @":" + Environment.NewLine + ifs + Environment.NewLine + @"break;";
                     }
                     else
-                    {    
-                        string ifcondition = string.Empty;    
+                    {
+                        string ifcondition = string.Empty;
                         finalStates.TryGetValue(states.Key, out bool finalState);
                         if (finalState)
                         {
@@ -392,50 +393,78 @@ namespace LFAProject
                         else
                         {
                             cases += Environment.NewLine + @"case " + states.Key + @":" + Environment.NewLine + @"error=true;" + Environment.NewLine + @"break;";
-                        }    
-                    }                    
-                }                
+                        }
+                    }
+                }
+                string tokenWordStr = string.Empty;
+                Dictionary<int, string> tokenWordDic = dfa.GetTokenWords(fileName);
+                foreach (var tokenWord in tokenWordDic)
+                {
+                    tokenWordStr += $"{Environment.NewLine}existingTokensDic.Add({tokenWord.Key},\"{tokenWord.Value}\");{Environment.NewLine}";
+                }
                 File.WriteAllText(programFile, @"using System;
-                using System.Collections.Generic;
-                using System.Linq;
-                using System.Text;
-                using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-                namespace Scanner
-                {
-                    class Program
-                    {
-                        static void Main(string[] args)
-                        {
-                          string inputString = string.Empty;
-                          while (!inputString.Equals(""\n""))
+namespace Scanner
+{
+    public class Program
+    {
+        static void Main(string[] args)
+        {
+            string inputString = string.Empty;
+            while (!inputString.Equals(""\n""))
             {
-                    Console.WriteLine(""Ingrese la cadena a analizar:"");
-                          inputString = Console.ReadLine();
-                inputString=inputString.Replace("" "", """");
-                byte[] bytes = Encoding.ASCII.GetBytes(inputString);
-                Queue<byte> inputQ = new Queue<byte>(bytes);
-                bool error = false;
-                int state = 0;                
-                while (inputQ.Count() != 0 && error != true)
-                {"+Environment.NewLine+@"switch (state){"+Environment.NewLine+cases +Environment.NewLine+ @"}
-            }
-                if (error == false)
-                {
-                    Console.WriteLine(""La cadena fue aceptada."");
+                    Console.WriteLine(""Ingrese la cadena a analizar: "");
+                    inputString = Console.ReadLine();
+                    byte[] bytes = Encoding.ASCII.GetBytes(inputString.Replace("" "", """"));
+                    Queue<byte> inputQ = new Queue<byte>(bytes);
+                    bool error = false;
+                    int state = 0;
+                    while (inputQ.Count() != 0 && error != true)
+                    {
+                        switch(state){"
+                            +cases+
+                        @"}
+                    }
+
+                    if (error == false)
+                    {
+                        Console.WriteLine(""La cadena fue aceptada."");
+                        Tools tools = new Tools();
+                        Dictionary<int, string> existingTokensDic = new Dictionary<int, string>();"
+                        +tokenWordStr+
+                        @"Queue<string> tokensQ = tools.TokenizeText(inputString, existingTokensDic);
+                        while (tokensQ.Count() != 0 && error != true)
+                        {
+
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine(""La cadena no fue aceptada."");
+                    }
+
+                    Console.ReadKey();
+                    Console.Clear();
                 }
-                else
-                {
-                    Console.WriteLine(""La cadena no fue aceptada."");
-                }
-                Console.ReadKey();
-                Console.Clear();
+
             }
-            
         }
-    }
-}");              
-            }            
+    }");              
+            }
+
+            dlg.Description = "Select a folder";
+            string destDir=string.Empty;
+            if (dlg.ShowDialog() == DialogResult.OK)
+            {
+                destDir = dlg.SelectedPath;
+            }
+            string srcDir = "C:\\VSprojects\\LFAProject\\LFAProject\\bin\\Debug\\Scanner";
+
+            fileClass.CopyFolder(srcDir, destDir);
         }
     }
 }
