@@ -39,24 +39,44 @@ namespace LFAProject
         {
             if (!string.IsNullOrEmpty(sourceDir) && !string.IsNullOrEmpty(destDir))
             {
+                string destination_dir = Path.Combine(destDir, "Generated Scanner");
                 string source_dir = /*@"E:\" + */sourceDir;
-                string destination_dir = /*@"C:\" +*/ destDir;
-
-                // substring is to remove destination_dir absolute path (E:\).
-
-                // Create subdirectory structure in destination    
+                if (!Directory.Exists(destination_dir))
+                {
+                    Directory.CreateDirectory(destination_dir);
+                }
+                else
+                {
+                    DeleteDirectory(destination_dir);
+                }
+                    
                 foreach (string dir in Directory.GetDirectories(source_dir, "*", SearchOption.AllDirectories))
                 {
-                    Directory.CreateDirectory(Path.Combine(destination_dir, dir.Substring(source_dir.Length + 1)));
-                    // Example:
-                    //     > C:\sources (and not C:\E:\sources)
+                    Directory.CreateDirectory(Path.Combine(destination_dir, dir.Substring(source_dir.Length + 1)));                    
                 }
-
                 foreach (string file_name in Directory.GetFiles(source_dir, "*", SearchOption.AllDirectories))
                 {
                     File.Copy(file_name, Path.Combine(destination_dir, file_name.Substring(source_dir.Length + 1)));
                 }
             }  
+        }
+
+        private static void DeleteDirectory(string dirTodelete) 
+        {
+            var files = Directory.GetFiles(dirTodelete);
+            var dir = Directory.GetDirectories(dirTodelete);
+
+            foreach (var file in files)
+            {
+                File.SetAttributes(file, FileAttributes.Normal);
+                File.Delete(file);
+            }
+
+            foreach (var d in dir)
+            {
+                DeleteDirectory(d);
+            }
+            Directory.Delete(dirTodelete, false);
         }
     }
 }
