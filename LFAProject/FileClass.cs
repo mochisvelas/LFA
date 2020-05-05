@@ -106,7 +106,10 @@ namespace LFAProject
                     {
                         newStr += $"\\{previousStr[i]}";
                     }
-                    newStr += previousStrArr[i];
+                    else
+                    {
+                        newStr += previousStrArr[i];
+                    }                    
                 }
                 return newStr;
             }

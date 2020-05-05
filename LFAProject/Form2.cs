@@ -465,49 +465,15 @@ namespace Scanner
                         +tokenWordStr+
                         @"Queue<string> tokensQ = tools.TokenizeText(inputString, existingTokensDic);
                         Dictionary<string, List<string>> setsRangesDic = new Dictionary<string, List<string>>();"
-                        +setsRangesStr+
-                        @"while (tokensQ.Count() != 0)
+                        +setsRangesStr+Environment.NewLine+
+                        @"List<string> finalTokenList = tools.TokenListToPrint(tokensQ, existingTokensDic, setsRangesDic);
+
+                    foreach (var finalToken in finalTokenList)
                     {
-                        var myKey = existingTokensDic.FirstOrDefault(x => x.Value.Equals(tokensQ.Peek())).Key;
-                        if (myKey>0)
-                        {
-                            Console.WriteLine($""{ tokensQ.Dequeue()} = { myKey}"");
-                        }
-                        else
-            {
-                bool end = false;
-                foreach (var setRange in setsRangesDic)
-                {
-                    foreach (var range in setRange.Value)
-                    {
-                        int actualTokenInt = 0;
-                        if (range.Contains(""-""))
-                        {
-                            var subRange = range.Split('-');
-                            if (tokensQ.Peek().Any(x => Convert.ToInt32(x) >= int.Parse(subRange[0])) && tokensQ.Peek().Any(x => Convert.ToInt32(x) <= int.Parse(subRange[1])))
-                            {
-                                actualTokenInt = existingTokensDic.FirstOrDefault(x => x.Value.Contains(setRange.Key)).Key;
-                                Console.WriteLine($""{tokensQ.Dequeue()} = {actualTokenInt}"");
-                                end = true;
-                                break;
-                            }
-                        }
-                        else if (tokensQ.Peek().Any(x => Convert.ToInt32(x) == int.Parse(range)))
-                        {
-                            actualTokenInt = existingTokensDic.FirstOrDefault(x => x.Value.Contains(setRange.Key)).Key;
-                            Console.WriteLine($""{tokensQ.Dequeue()} = {actualTokenInt}"");
-                            end = true;
-                            break;
-                        }
+                        Console.WriteLine(finalToken);
                     }
-                    if (end)
-                    {
-                        break;
-                    }
-                }
+                
             }
-        }
-    }
                     else
                     {
                         Console.WriteLine(""La cadena no fue aceptada."");
