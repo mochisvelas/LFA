@@ -235,6 +235,7 @@ namespace LFAProject
         }
 
         private readonly FileClass fileClass = new FileClass();
+
         private void button3_Click(object sender, EventArgs e)
         {            
             string programFile = "C:\\VSprojects\\LFAProject\\LFAProject\\bin\\Debug\\Scanner\\Scanner\\Program.cs";            
