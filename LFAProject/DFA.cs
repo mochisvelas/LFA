@@ -73,10 +73,26 @@ namespace LFAProject
 
         public Dictionary<string, List<string>> GetSetsRanges(string FileName, List<string> addedTSigns)
         {            
-            Dictionary<string, List<string>> sets = new Dictionary<string, List<string>>();
-            addedTSigns.Sort();
-            addedTSigns.Reverse();
-            Queue<string> setsQ = new Queue<string>(addedTSigns);            
+            Dictionary<string, List<string>> sets = new Dictionary<string, List<string>>();            
+            //List<string> listSets = new List<string>();
+            //int cont = 0;
+            //foreach (var added in addedTSigns)
+            //{
+            //    if (fileHelper.RemoveSingleQuotes(added).Count() > 1)
+            //    {
+            //        listSets.Add(added);
+            //        cont++;
+            //    }
+            //}
+            //listSets.Sort();
+            //listSets.Reverse();
+            //Queue<string> setsQ = new Queue<string>(listSets);
+            //addedTSigns.OrderByDescending(x => x.Length);
+            //if (addedTSigns.Count > cont)
+            //{
+            //    addedTSigns.RemoveRange(cont, addedTSigns.Count - cont);
+            //}
+            Queue<string> setsQ = new Queue<string>(addedTSigns);
             StreamReader line = new StreamReader(FileName);
             string readLine = line.ReadLine();            
             while (!readLine.Contains("TOKENS"))
@@ -84,10 +100,11 @@ namespace LFAProject
                 List<string> ranges = new List<string>();
                 if (!readLine.Contains("SETS") && !string.IsNullOrEmpty(readLine))
                 {
-                    readLine = tools.RemoveUnwantedChars(readLine.Substring(readLine.IndexOf("=") + 1));
-                    if (readLine.Contains(".."))
+                    var setArr = tools.RemoveUnwantedChars(readLine).Split(new[] { '=' }, 2);
+                    //readLine = tools.RemoveUnwantedChars(readLine.Substring(readLine.IndexOf("=") + 1));
+                    if (setArr[1].Contains(".."))
                     {
-                        readLine = readLine.Replace("..", "-");
+                        readLine = setArr[1].Replace("..", "-");
                     }
                     if (readLine.Contains("'"))
                     {
@@ -136,7 +153,7 @@ namespace LFAProject
                                 ranges.Add(System.Convert.ToInt32(System.Convert.ToChar(range)).ToString());
                             }
                         }
-                        sets.Add(setsQ.Dequeue(), ranges);                        
+                        sets.Add(setArr[0], ranges);                        
                     }
                     else
                     {
@@ -177,7 +194,7 @@ namespace LFAProject
                         {
                             ranges.Add(System.Convert.ToInt32(System.Convert.ToChar(readLine)).ToString());
                         }                        
-                        sets.Add(setsQ.Dequeue(), ranges);                        
+                        sets.Add(setArr[0], ranges);                        
                     }                    
                 }
                 readLine = line.ReadLine();
@@ -186,18 +203,27 @@ namespace LFAProject
             {               
                 while (setsQ.Count() != 0)
                 {
-                    List<string> singleRanges = new List<string>();
-                    string set = string.Empty;
-                    if (!string.IsNullOrEmpty(setsQ.Peek().Replace(@"'", "")))
+                    List<string> alreadyAdded = sets.Keys.ToList();
+                    string find = alreadyAdded.Find(x => setsQ.Peek().Contains(x));
+                    if (!string.IsNullOrEmpty(find))
                     {
-                        set = setsQ.Peek().Replace("'", "");
+                        setsQ.Dequeue();
                     }
                     else
                     {
-                        set = setsQ.Peek().Replace("'''","'");
-                    }
-                    singleRanges.Add(System.Convert.ToInt32(System.Convert.ToChar(set)).ToString());
-                    sets.Add(setsQ.Dequeue(), singleRanges);                    
+                        List<string> singleRanges = new List<string>();
+                        string set = string.Empty;
+                        if (!string.IsNullOrEmpty(setsQ.Peek().Replace(@"'", "")))
+                        {
+                            set = setsQ.Peek().Replace("'", "");
+                        }
+                        else
+                        {
+                            set = setsQ.Peek().Replace("'''", "'");
+                        }
+                        singleRanges.Add(System.Convert.ToInt32(System.Convert.ToChar(set)).ToString());
+                        sets.Add(setsQ.Dequeue(), singleRanges);
+                    }                                        
                 }                
             }
             return sets;

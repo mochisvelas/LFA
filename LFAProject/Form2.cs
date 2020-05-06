@@ -54,6 +54,7 @@ namespace LFAProject
             }
             addedTSigns = dfa.TSigns(fileName);            
             List<string> Tokens = dfa.GetRegex(fileName, addedTSigns, ref error);
+            //Dictionary<string, List<string>> setsRanges = dfa.GetSetsRanges(fileName, addedTSigns);
             if (!string.IsNullOrEmpty(error)) 
             {
                 MessageBox.Show(error, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error); 
@@ -237,70 +238,97 @@ namespace LFAProject
         private readonly FileClass fileClass = new FileClass();
 
         private void button3_Click(object sender, EventArgs e)
-        {            
-            string programFile = "C:\\VSprojects\\LFAProject\\LFAProject\\bin\\Debug\\Scanner\\Scanner\\Program.cs";            
-            fileClass.IsFileTypeCorrect(programFile, ".cs", ref error);
-            if (error == "Bad filetype")
+        {
+            if (dataGridView1.Rows.Count != 0)
             {
-                MessageBox.Show("Select Program.cs", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-            else
-            {
-                File.WriteAllText(programFile, string.Empty);
-                Dictionary<string, List<string>> setsRanges = dfa.GetSetsRanges(fileName, addedTSigns);
-                Dictionary<int, Dictionary<List<string>, int>> transitionsDic = new Dictionary<int, Dictionary<List<string>, int>>();
-                //Dictionary<int, string> reservedWords = dfa.GetReservedWords(fileName);
-                List<string> stateListKeys = new List<string>();
-                foreach (var key in stateList)
+                string programFile = "C:\\VSprojects\\LFAProject\\LFAProject\\bin\\Debug\\Scanner\\Scanner\\Program.cs";
+                fileClass.IsFileTypeCorrect(programFile, ".cs", ref error);
+                if (error == "Bad filetype")
                 {
-                    stateListKeys.Add(string.Join(",", key.Key));
+                    MessageBox.Show("Select Program.cs", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
-                foreach (DataRow row in transitionTable.Rows)
+                else
                 {
-                    int numCase = 0;
-                    Dictionary<List<string>, int> subDictionary = new Dictionary<List<string>, int>();
-                    foreach (DataColumn dc in transitionTable.Columns)
+                    File.WriteAllText(programFile, string.Empty);
+                    Dictionary<string, List<string>> setsRanges = dfa.GetSetsRanges(fileName, addedTSigns);
+                    Dictionary<int, Dictionary<List<string>, int>> transitionsDic = new Dictionary<int, Dictionary<List<string>, int>>();
+                    //Dictionary<int, string> reservedWords = dfa.GetReservedWords(fileName);
+                    List<string> stateListKeys = new List<string>();
+                    foreach (var key in stateList)
                     {
-                        if (dc.ColumnName.Equals("Estado"))
+                        stateListKeys.Add(string.Join(",", key.Key));
+                    }
+                    foreach (DataRow row in transitionTable.Rows)
+                    {
+                        int numCase = 0;
+                        Dictionary<List<string>, int> subDictionary = new Dictionary<List<string>, int>();
+                        foreach (DataColumn dc in transitionTable.Columns)
                         {
-                            int rowIndex = transitionTable.Rows.IndexOf(row);
-                            List<string> dcList = row[dc.ColumnName].ToString().Split(',').ToList();
-                            numCase = stateListKeys.IndexOf(string.Join(",", dcList));
-                        }
-                        else
-                        {
-                            List<string> symRanges = new List<string>();
-                            setsRanges.TryGetValue(dc.ColumnName, out symRanges);
-                            int rowIndex = transitionTable.Rows.IndexOf(row);
-                            List<string> dcList = row[dc.ColumnName].ToString().Split(',').ToList();
-                            int nextState = stateListKeys.IndexOf(string.Join(",", dcList));
-                            if (nextState > 0)
+                            if (dc.ColumnName.Equals("Estado"))
                             {
-                                subDictionary.Add(symRanges, nextState);
+                                int rowIndex = transitionTable.Rows.IndexOf(row);
+                                List<string> dcList = row[dc.ColumnName].ToString().Split(',').ToList();
+                                numCase = stateListKeys.IndexOf(string.Join(",", dcList));
+                            }
+                            else
+                            {
+                                List<string> symRanges = new List<string>();
+                                setsRanges.TryGetValue(dc.ColumnName, out symRanges);
+                                int rowIndex = transitionTable.Rows.IndexOf(row);
+                                List<string> dcList = row[dc.ColumnName].ToString().Split(',').ToList();
+                                int nextState = stateListKeys.IndexOf(string.Join(",", dcList));
+                                if (nextState > 0)
+                                {
+                                    subDictionary.Add(symRanges, nextState);
+                                }
                             }
                         }
+                        transitionsDic.Add(numCase, subDictionary);
                     }
-                    transitionsDic.Add(numCase, subDictionary);
-                }
 
-                string cases = string.Empty;
-                foreach (var states in transitionsDic)
-                {
-                    string ifs = string.Empty;
-                    if (states.Value.Count() > 0)
+                    string cases = string.Empty;
+                    foreach (var states in transitionsDic)
                     {
-                        var lastTransition = states.Value.Last();
-                        var firstTransition = states.Value.First();
-
-                        foreach (var transition in states.Value)
+                        string ifs = string.Empty;
+                        if (states.Value.Count() > 0)
                         {
-                            string ifcondition = string.Empty;
-                            foreach (var state in transition.Key)
+                            var lastTransition = states.Value.Last();
+                            var firstTransition = states.Value.First();
+
+                            foreach (var transition in states.Value)
                             {
-                                if (transition.Key.Count() > 1)
+                                string ifcondition = string.Empty;
+                                foreach (var state in transition.Key)
                                 {
-                                    var lastState = transition.Key.Last();
-                                    if (state.Equals(lastState))
+                                    if (transition.Key.Count() > 1)
+                                    {
+                                        var lastState = transition.Key.Last();
+                                        if (state.Equals(lastState))
+                                        {
+                                            if (state.Contains("-"))
+                                            {
+                                                var rangesArr = state.Split('-');
+                                                ifcondition += $" inputQ.Peek() >= {rangesArr[0]} && inputQ.Peek() <= {rangesArr[1]}";
+                                            }
+                                            else
+                                            {
+                                                ifcondition += $" inputQ.Peek() == {state}";
+                                            }
+                                        }
+                                        else
+                                        {
+                                            if (state.Contains("-"))
+                                            {
+                                                var rangesArr = state.Split('-');
+                                                ifcondition += $" inputQ.Peek() >= {rangesArr[0]} && inputQ.Peek() <= {rangesArr[1]} ||";
+                                            }
+                                            else
+                                            {
+                                                ifcondition += $" inputQ.Peek() == {state} ||";
+                                            }
+                                        }
+                                    }
+                                    else
                                     {
                                         if (state.Contains("-"))
                                         {
@@ -312,125 +340,100 @@ namespace LFAProject
                                             ifcondition += $" inputQ.Peek() == {state}";
                                         }
                                     }
-                                    else
-                                    {
-                                        if (state.Contains("-"))
-                                        {
-                                            var rangesArr = state.Split('-');
-                                            ifcondition += $" inputQ.Peek() >= {rangesArr[0]} && inputQ.Peek() <= {rangesArr[1]} ||";
-                                        }
-                                        else
-                                        {
-                                            ifcondition += $" inputQ.Peek() == {state} ||";
-                                        }
-                                    }
-                                }
-                                else
-                                {
-                                    if (state.Contains("-"))
-                                    {
-                                        var rangesArr = state.Split('-');
-                                        ifcondition += $" inputQ.Peek() >= {rangesArr[0]} && inputQ.Peek() <= {rangesArr[1]}";
-                                    }
-                                    else
-                                    {
-                                        ifcondition += $" inputQ.Peek() == {state}";
-                                    }
-                                }
 
-                            }
-                            if (transition.Equals(firstTransition) && transition.Equals(lastTransition))//JFKL;ASJFLSA;FJS
-                            {
-                                finalStates.TryGetValue(states.Key, out bool finalState);//finalStates.TryGetValue(transition.Value, out bool finalState);
-                                if (finalState)
-                                {
-                                    ifs += Environment.NewLine + @"if(" + ifcondition + @"){" + Environment.NewLine + @"state=" + transition.Value + @";" + Environment.NewLine
-                                    + @"inputQ.Dequeue();" + Environment.NewLine + @"}" + Environment.NewLine + @"else{" + Environment.NewLine + @"state=0;" + Environment.NewLine + @"}";
                                 }
-                                else
-                                {
-                                    ifs += Environment.NewLine + @"if(" + ifcondition + @"){" + Environment.NewLine + @"state=" + transition.Value + @";" + Environment.NewLine
-                                    + @"inputQ.Dequeue();" + Environment.NewLine + @"}" + Environment.NewLine + @"else{" + Environment.NewLine + @"error=true;" + Environment.NewLine + @"}";
-                                }
-                            }
-                            else
-                            {
-                                if (transition.Equals(lastTransition))
+                                if (transition.Equals(firstTransition) && transition.Equals(lastTransition))//JFKL;ASJFLSA;FJS
                                 {
                                     finalStates.TryGetValue(states.Key, out bool finalState);//finalStates.TryGetValue(transition.Value, out bool finalState);
                                     if (finalState)
                                     {
-                                        ifs += Environment.NewLine + @"else if(" + ifcondition + @"){" + Environment.NewLine + @"state=" + transition.Value + @";" + Environment.NewLine
+                                        ifs += Environment.NewLine + @"if(" + ifcondition + @"){" + Environment.NewLine + @"state=" + transition.Value + @";" + Environment.NewLine
                                         + @"inputQ.Dequeue();" + Environment.NewLine + @"}" + Environment.NewLine + @"else{" + Environment.NewLine + @"state=0;" + Environment.NewLine + @"}";
                                     }
                                     else
                                     {
-                                        ifs += Environment.NewLine + @"else if(" + ifcondition + @"){" + Environment.NewLine + @"state=" + transition.Value + @";" + Environment.NewLine
-                                    + @"inputQ.Dequeue();" + Environment.NewLine + @"}" + Environment.NewLine + @"else{" + Environment.NewLine + @"error=true;" + Environment.NewLine + @"}";
+                                        ifs += Environment.NewLine + @"if(" + ifcondition + @"){" + Environment.NewLine + @"state=" + transition.Value + @";" + Environment.NewLine
+                                        + @"inputQ.Dequeue();" + Environment.NewLine + @"}" + Environment.NewLine + @"else{" + Environment.NewLine + @"error=true;" + Environment.NewLine + @"}";
                                     }
-                                }
-                                else if (transition.Equals(firstTransition))
-                                {
-                                    ifs += Environment.NewLine + @"if(" + ifcondition + @"){" + Environment.NewLine + @"state=" + transition.Value + @";" + Environment.NewLine + @"inputQ.Dequeue();"
-                                    + Environment.NewLine + @"}";
                                 }
                                 else
                                 {
-                                    ifs += Environment.NewLine + @"else if(" + ifcondition + @"){" + Environment.NewLine + @"state=" + transition.Value + @";" + Environment.NewLine + @"inputQ.Dequeue();"
-                                    + Environment.NewLine + @"}";
+                                    if (transition.Equals(lastTransition))
+                                    {
+                                        finalStates.TryGetValue(states.Key, out bool finalState);//finalStates.TryGetValue(transition.Value, out bool finalState);
+                                        if (finalState)
+                                        {
+                                            ifs += Environment.NewLine + @"else if(" + ifcondition + @"){" + Environment.NewLine + @"state=" + transition.Value + @";" + Environment.NewLine
+                                            + @"inputQ.Dequeue();" + Environment.NewLine + @"}" + Environment.NewLine + @"else{" + Environment.NewLine + @"state=0;" + Environment.NewLine + @"}";
+                                        }
+                                        else
+                                        {
+                                            ifs += Environment.NewLine + @"else if(" + ifcondition + @"){" + Environment.NewLine + @"state=" + transition.Value + @";" + Environment.NewLine
+                                        + @"inputQ.Dequeue();" + Environment.NewLine + @"}" + Environment.NewLine + @"else{" + Environment.NewLine + @"error=true;" + Environment.NewLine + @"}";
+                                        }
+                                    }
+                                    else if (transition.Equals(firstTransition))
+                                    {
+                                        ifs += Environment.NewLine + @"if(" + ifcondition + @"){" + Environment.NewLine + @"state=" + transition.Value + @";" + Environment.NewLine + @"inputQ.Dequeue();"
+                                        + Environment.NewLine + @"}";
+                                    }
+                                    else
+                                    {
+                                        ifs += Environment.NewLine + @"else if(" + ifcondition + @"){" + Environment.NewLine + @"state=" + transition.Value + @";" + Environment.NewLine + @"inputQ.Dequeue();"
+                                        + Environment.NewLine + @"}";
+                                    }
                                 }
                             }
-                        }
-                        cases += Environment.NewLine + @"case " + states.Key + @":" + Environment.NewLine + ifs + Environment.NewLine + @"break;";
-                    }
-                    else
-                    {
-                        string ifcondition = string.Empty;
-                        finalStates.TryGetValue(states.Key, out bool finalState);
-                        if (finalState)
-                        {
-                            cases += Environment.NewLine + @"case " + states.Key + @":" + Environment.NewLine + @"state=0;" + Environment.NewLine + @"break;";
+                            cases += Environment.NewLine + @"case " + states.Key + @":" + Environment.NewLine + ifs + Environment.NewLine + @"break;";
                         }
                         else
                         {
-                            cases += Environment.NewLine + @"case " + states.Key + @":" + Environment.NewLine + @"error=true;" + Environment.NewLine + @"break;";
-                        }
-                    }
-                }
-                string tokenWordStr = string.Empty;
-                Dictionary<int, string> tokenWordDic = dfa.GetTokenWords(fileName);
-                foreach (var tokenWord in tokenWordDic)
-                {
-                    tokenWordStr += $"{Environment.NewLine}existingTokensDic.Add({tokenWord.Key},\"{tokenWord.Value}\");{Environment.NewLine}";
-                }
-                string setsRangesStr = string.Empty;
-                string rangeList = string.Empty;
-                Dictionary<string, List<string>> setsRangesDic = setsRanges;
-                Tools tools = new Tools();
-                foreach (var setRange in setsRangesDic)
-                {
-                    var lastRange = setRange.Value.Last();                    
-                    foreach (var range in setRange.Value)
-                    {
-                        if (setRange.Value.Count() > 1)
-                        {
-                            if (range == lastRange)
+                            string ifcondition = string.Empty;
+                            finalStates.TryGetValue(states.Key, out bool finalState);
+                            if (finalState)
                             {
-                                rangeList += $"\"{range}\"";
-                            }                            
+                                cases += Environment.NewLine + @"case " + states.Key + @":" + Environment.NewLine + @"state=0;" + Environment.NewLine + @"break;";
+                            }
                             else
                             {
-                                rangeList += $"\"{range}\",";
+                                cases += Environment.NewLine + @"case " + states.Key + @":" + Environment.NewLine + @"error=true;" + Environment.NewLine + @"break;";
                             }
                         }
-                        else
-                        {
-                            rangeList = $"\"{range}\"";
-                        }
                     }
-                    setsRangesStr += $"{Environment.NewLine}setsRangesDic.Add(\"{tools.RemoveUnwantedChars(fileClass.RemoveSingleQuotes(setRange.Key))}\", new List<string>(new string[] {{{rangeList}}}));{Environment.NewLine}";
-                }
-                File.WriteAllText(programFile, @"using System;
+                    string tokenWordStr = string.Empty;
+                    Dictionary<int, string> tokenWordDic = dfa.GetTokenWords(fileName);
+                    foreach (var tokenWord in tokenWordDic)
+                    {
+                        tokenWordStr += $"{Environment.NewLine}existingTokensDic.Add({tokenWord.Key},\"{tokenWord.Value}\");{Environment.NewLine}";
+                    }
+                    string setsRangesStr = string.Empty;
+                    string rangeList = string.Empty;
+                    Dictionary<string, List<string>> setsRangesDic = setsRanges;
+                    Tools tools = new Tools();
+                    foreach (var setRange in setsRangesDic)
+                    {
+                        var lastRange = setRange.Value.Last();
+                        foreach (var range in setRange.Value)
+                        {
+                            if (setRange.Value.Count() > 1)
+                            {
+                                if (range == lastRange)
+                                {
+                                    rangeList += $"\"{range}\"";
+                                }
+                                else
+                                {
+                                    rangeList += $"\"{range}\",";
+                                }
+                            }
+                            else
+                            {
+                                rangeList = $"\"{range}\"";
+                            }
+                        }
+                        setsRangesStr += $"{Environment.NewLine}setsRangesDic.Add(\"{tools.RemoveUnwantedChars(fileClass.RemoveSingleQuotes(setRange.Key))}\", new List<string>(new string[] {{{rangeList}}}));{Environment.NewLine}";
+                    }
+                    File.WriteAllText(programFile, @"using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -454,8 +457,8 @@ namespace Scanner
                     while (inputQ.Count() != 0 && error != true)
                     {
                         switch(state){"
-                            +cases+
-                        @"}
+                                + cases +
+                            @"}
                     }
 
                     if (error == false)
@@ -463,11 +466,11 @@ namespace Scanner
                         Console.WriteLine(""La cadena fue aceptada."");
                         Tools tools = new Tools();
                         Dictionary<int, string> existingTokensDic = new Dictionary<int, string>();"
-                        +tokenWordStr+
-                        @"Queue<string> tokensQ = tools.TokenizeText(inputString, existingTokensDic);
+                            + tokenWordStr +
+                            @"Queue<string> tokensQ = tools.TokenizeText(inputString, existingTokensDic);
                         Dictionary<string, List<string>> setsRangesDic = new Dictionary<string, List<string>>();"
-                        +setsRangesStr+Environment.NewLine+
-                        @"List<string> finalTokenList = tools.TokenListToPrint(tokensQ, existingTokensDic, setsRangesDic);
+                            + setsRangesStr + Environment.NewLine +
+                            @"List<string> finalTokenList = tools.TokenListToPrint(tokensQ, existingTokensDic, setsRangesDic);
 
                     foreach (var finalToken in finalTokenList)
                     {
@@ -486,24 +489,25 @@ namespace Scanner
 
             }
         }
-    }");              
-            }
+    }");
+                }
 
-            dlg.Description = "Select a folder";
-            string destDir=string.Empty;
-            if (dlg.ShowDialog() == DialogResult.OK)
-            {
-                destDir = dlg.SelectedPath;
-            }
-            string srcDir = "C:\\VSprojects\\LFAProject\\LFAProject\\bin\\Debug\\Scanner";
-            if (!string.IsNullOrEmpty(destDir))
-            {
-                fileClass.CopyFolder(srcDir, destDir);
-            }
-            else
-            {
-                MessageBox.Show("Seleccione una dirección de destino.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+                dlg.Description = "Select a folder";
+                string destDir = string.Empty;
+                if (dlg.ShowDialog() == DialogResult.OK)
+                {
+                    destDir = dlg.SelectedPath;
+                }
+                string srcDir = "C:\\VSprojects\\LFAProject\\LFAProject\\bin\\Debug\\Scanner";
+                if (!string.IsNullOrEmpty(destDir))
+                {
+                    fileClass.CopyFolder(srcDir, destDir);
+                }
+                else
+                {
+                    MessageBox.Show("Seleccione una dirección de destino.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }            
         }
     }
 }
