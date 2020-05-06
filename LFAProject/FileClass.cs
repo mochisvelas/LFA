@@ -25,15 +25,7 @@ namespace LFAProject
                 error = "Null file";
                 return false;
             }
-        }
-
-        public void EmptyFile(string fileName, ref string error) 
-        {
-            if (true)
-            {
-
-            }
-        }
+        }        
 
         public void CopyFolder(string sourceDir, string destDir) 
         {

@@ -73,25 +73,7 @@ namespace LFAProject
 
         public Dictionary<string, List<string>> GetSetsRanges(string FileName, List<string> addedTSigns)
         {            
-            Dictionary<string, List<string>> sets = new Dictionary<string, List<string>>();            
-            //List<string> listSets = new List<string>();
-            //int cont = 0;
-            //foreach (var added in addedTSigns)
-            //{
-            //    if (fileHelper.RemoveSingleQuotes(added).Count() > 1)
-            //    {
-            //        listSets.Add(added);
-            //        cont++;
-            //    }
-            //}
-            //listSets.Sort();
-            //listSets.Reverse();
-            //Queue<string> setsQ = new Queue<string>(listSets);
-            //addedTSigns.OrderByDescending(x => x.Length);
-            //if (addedTSigns.Count > cont)
-            //{
-            //    addedTSigns.RemoveRange(cont, addedTSigns.Count - cont);
-            //}
+            Dictionary<string, List<string>> sets = new Dictionary<string, List<string>>();
             Queue<string> setsQ = new Queue<string>(addedTSigns);
             StreamReader line = new StreamReader(FileName);
             string readLine = line.ReadLine();            

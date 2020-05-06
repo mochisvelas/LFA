@@ -230,7 +230,7 @@ namespace LFAProject
             }
             else
             {
-                MessageBox.Show("No se ha cargado el archivo.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("No se ha generado la tabla de transiciones.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
         }
@@ -507,7 +507,11 @@ namespace Scanner
                 {
                     MessageBox.Show("Seleccione una dirección de destino.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
-            }            
+            }
+            else
+            {
+                MessageBox.Show("No se ha generarado la tabla de transiciones.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 }
