@@ -1,7 +1,6 @@
 C:\VSprojects\LFAProject\LFAProject\bin\Debug\LFAProject.exe.config
 C:\VSprojects\LFAProject\LFAProject\bin\Debug\LFAProject.exe
 C:\VSprojects\LFAProject\LFAProject\bin\Debug\LFAProject.pdb
-C:\VSprojects\LFAProject\LFAProject\obj\Debug\LFAProject.csprojAssemblyReference.cache
 C:\VSprojects\LFAProject\LFAProject\obj\Debug\LFAProject.Properties.Resources.resources
 C:\VSprojects\LFAProject\LFAProject\obj\Debug\LFAProject.csproj.GenerateResource.cache
 C:\VSprojects\LFAProject\LFAProject\obj\Debug\LFAProject.exe
@@ -9,3 +8,4 @@ C:\VSprojects\LFAProject\LFAProject\obj\Debug\LFAProject.pdb
 C:\VSprojects\LFAProject\LFAProject\obj\Debug\LFAProject.Form1.resources
 C:\VSprojects\LFAProject\LFAProject\obj\Debug\LFAProject.Form2.resources
 C:\VSprojects\LFAProject\LFAProject\obj\Debug\LFAProject.TreeDraw.resources
+C:\VSprojects\LFAProject\LFAProject\obj\Debug\LFAProject.csprojAssemblyReference.cache

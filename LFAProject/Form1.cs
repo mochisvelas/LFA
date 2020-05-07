@@ -6,7 +6,7 @@ namespace LFAProject
 {
     public partial class Form1 : Form
     {
-        readonly Malgorithm malgorithm = new Malgorithm();
+        //readonly Malgorithm malgorithm = new Malgorithm();
         private readonly FileClass fileClass = new FileClass();
         readonly CheckGrammar checkGramar = new CheckGrammar();
         string error = string.Empty;
@@ -17,7 +17,7 @@ namespace LFAProject
 
         private void button1_Click(object sender, EventArgs e)
         {
-            BTreeNode RegexTree = malgorithm.FillRETree(ref error);
+            //BTreeNode RegexTree = malgorithm.FillRETree(ref error);
             if (!string.IsNullOrEmpty(error))
             {
                 MessageBox.Show(error, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);

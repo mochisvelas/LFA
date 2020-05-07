@@ -348,7 +348,7 @@ namespace LFAProject
                                     if (finalState)
                                     {
                                         ifs += Environment.NewLine + @"if(" + ifcondition + @"){" + Environment.NewLine + @"state=" + transition.Value + @";" + Environment.NewLine
-                                        + @"inputQ.Dequeue();" + Environment.NewLine + @"}" + Environment.NewLine + @"else{" + Environment.NewLine + @"state=0;" + Environment.NewLine + @"}";
+                                        + @"inputQ.Dequeue();" + Environment.NewLine + @"}" + Environment.NewLine + @"else{" + Environment.NewLine + @"if(state == 0){error=true;}else{state=0;}" + Environment.NewLine + @"}";
                                     }
                                     else
                                     {
@@ -364,7 +364,7 @@ namespace LFAProject
                                         if (finalState)
                                         {
                                             ifs += Environment.NewLine + @"else if(" + ifcondition + @"){" + Environment.NewLine + @"state=" + transition.Value + @";" + Environment.NewLine
-                                            + @"inputQ.Dequeue();" + Environment.NewLine + @"}" + Environment.NewLine + @"else{" + Environment.NewLine + @"state=0;" + Environment.NewLine + @"}";
+                                            + @"inputQ.Dequeue();" + Environment.NewLine + @"}" + Environment.NewLine + @"else{" + Environment.NewLine + @"if(state == 0){error=true;}else{state=0;}" + Environment.NewLine + @"}";
                                         }
                                         else
                                         {
@@ -400,13 +400,13 @@ namespace LFAProject
                             }
                         }
                     }
-                    string tokenWordStr = string.Empty;
+                    string tokenWordStr = Environment.NewLine;
                     Dictionary<int, string> tokenWordDic = dfa.GetTokenWords(fileName);
                     foreach (var tokenWord in tokenWordDic)
                     {
-                        tokenWordStr += $"{Environment.NewLine}existingTokensDic.Add({tokenWord.Key},\"{tokenWord.Value}\");{Environment.NewLine}";
+                        tokenWordStr += $"existingTokensDic.Add({tokenWord.Key},\"{tokenWord.Value}\");{Environment.NewLine}";
                     }
-                    string setsRangesStr = string.Empty;
+                    string setsRangesStr = Environment.NewLine;
                     string rangeList = string.Empty;
                     Dictionary<string, List<string>> setsRangesDic = setsRanges;
                     Tools tools = new Tools();
@@ -431,7 +431,7 @@ namespace LFAProject
                                 rangeList = $"\"{range}\"";
                             }
                         }
-                        setsRangesStr += $"{Environment.NewLine}setsRangesDic.Add(\"{tools.RemoveUnwantedChars(fileClass.RemoveSingleQuotes(setRange.Key))}\", new List<string>(new string[] {{{rangeList}}}));{Environment.NewLine}";
+                        setsRangesStr += $"setsRangesDic.Add(\"{tools.RemoveUnwantedChars(fileClass.RemoveSingleQuotes(setRange.Key))}\", new List<string>(new string[] {{{rangeList}}}));{Environment.NewLine}";
                     }
                     File.WriteAllText(programFile, @"using System;
 using System.Collections.Generic;
@@ -446,50 +446,90 @@ namespace Scanner
         static void Main(string[] args)
         {
             string inputString = string.Empty;
-            while (!inputString.Equals(""\n""))
+            Tools tools = new Tools();
+            Dictionary<int, string> existingTokensDic = new Dictionary<int, string>();"+
+            tokenWordStr+
+            @"Dictionary<string, List<string>> setsRangesDic = new Dictionary<string, List<string>>();"
+            + setsRangesStr + Environment.NewLine +
+            @"while (!inputString.Equals(""\n""))
             {
-                    Console.WriteLine(""Ingrese la cadena a analizar: "");
-                    inputString = Console.ReadLine();
-                    byte[] bytes = Encoding.ASCII.GetBytes(inputString.Replace("" "", """"));
-                    Queue<byte> inputQ = new Queue<byte>(bytes);
-                    bool error = false;
-                    int state = 0;
-                    while (inputQ.Count() != 0 && error != true)
-                    {
-                        switch(state){"
+                        Console.WriteLine(""Ingrese la cadena a analizar: "");
+                        inputString = Console.ReadLine();
+                        List<string> find = existingTokensDic.Values.ToList().FindAll(x => inputString.Contains(x));
+                        if (string.IsNullOrEmpty(find))
+                        {
+                            foreach (var found in find)
+                            {
+                                inputString = inputString.Replace(found, """");
+                            }
+                            Queue<string> findQ = new Queue<string>(find);
+                        }
+                        if (!string.IsNullOrEmpty(inputString.Replace("" "", """")))
+                        {
+                            byte[] bytes = Encoding.ASCII.GetBytes(inputString.Replace("" "", """"));
+                            Queue<byte> inputQ = new Queue<byte>(bytes);
+                            bool error = false;
+                            int state = 0;
+                            while (inputQ.Count() != 0 && error != true)
+                            {
+                                switch(state){"
                                 + cases +
-                            @"}
-                    }
+                            @"}}
 
                     if (error == false)
                     {
-                        Console.WriteLine(""La cadena fue aceptada."");
-                        Tools tools = new Tools();
-                        Dictionary<int, string> existingTokensDic = new Dictionary<int, string>();"
-                            + tokenWordStr +
-                            @"Queue<string> tokensQ = tools.TokenizeText(inputString, existingTokensDic);
-                        Dictionary<string, List<string>> setsRangesDic = new Dictionary<string, List<string>>();"
-                            + setsRangesStr + Environment.NewLine +
-                            @"List<string> finalTokenList = tools.TokenListToPrint(tokensQ, existingTokensDic, setsRangesDic);
+                        Console.WriteLine(""La cadena fue aceptada."");                        
+
+
+                        Queue<string> tokensQ = tools.TokenizeText(inputString, existingTokensDic, find);
+
+                    List<string> finalTokenList = tools.TokenListToPrint(tokensQ, existingTokensDic, setsRangesDic);
 
                     foreach (var finalToken in finalTokenList)
                     {
                         Console.WriteLine(finalToken);
                     }
-                
-            }
-                    else
-                    {
-                        Console.WriteLine(""La cadena no fue aceptada."");
-                    }
 
-                    Console.ReadKey();
-                    Console.Clear();
+                        if (findQ.Count() > 0)
+                        {
+                            List<string> anyReservedList = tools.TokenListToPrint(findQ, existingTokensDic, setsRangesDic);
+
+                            foreach (var finalToken in anyReservedList)
+                            {
+                                Console.WriteLine(finalToken);
+                            }
+                        }
                 }
-
+                    else
+                {
+                    Console.WriteLine(""La cadena NO fue aceptada."");
+                }
             }
+            else
+            {
+                if (find.Count() > 0)
+                {
+                    List<string> finalTokenList = tools.TokenListToPrint(findQ, existingTokensDic, setsRangesDic);
+                    Console.WriteLine(""La cadena fue aceptada."");
+                    foreach (var finalToken in finalTokenList)
+                    {
+                        Console.WriteLine(finalToken);
+                    }
+                }
+                else
+                {
+                    Console.WriteLine(""La cadena NO fue aceptada."");
+                }
+            }
+
+
+            Console.ReadKey();
+            Console.Clear();
         }
-    }");
+
+    }
+}
+}");
                 }
 
                 dlg.Description = "Select a folder";
