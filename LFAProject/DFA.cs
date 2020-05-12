@@ -68,6 +68,25 @@ namespace LFAProject
                 }
                 readLine = line.ReadLine();
             }
+            bool read = true;
+            while (read && !line.EndOfStream)
+            {
+                readLine = line.ReadLine();
+                if (!string.IsNullOrEmpty(readLine))
+                {                    
+                    if (readLine.Contains("}"))
+                    {
+                        read = false;
+                    }
+                    else if (!readLine.Contains("{") && !readLine.Contains("(") && !readLine.Contains("ERROR"))
+                    {
+                        readLine = tools.RemoveUnwantedChars(readLine);
+                        readLine = readLine.Replace("'", "");
+                        var actualToken = readLine.Split(new[] { '=' }, 2);
+                        reservedWords.Add(int.Parse(tools.RemoveUnwantedChars(actualToken[0])), actualToken[1]);
+                    }
+                }
+            }
             return reservedWords;
         }
 

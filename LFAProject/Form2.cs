@@ -456,14 +456,11 @@ namespace Scanner
                         Console.WriteLine(""Ingrese la cadena a analizar: "");
                         inputString = Console.ReadLine();
                         List<string> find = existingTokensDic.Values.ToList().FindAll(x => inputString.Contains(x));
-                        if (string.IsNullOrEmpty(find))
+                        foreach (var found in find)
                         {
-                            foreach (var found in find)
-                            {
-                                inputString = inputString.Replace(found, """");
-                            }
-                            Queue<string> findQ = new Queue<string>(find);
+                            inputString = inputString.Replace(found, """");
                         }
+                        Queue<string> findQ = new Queue<string>(find);
                         if (!string.IsNullOrEmpty(inputString.Replace("" "", """")))
                         {
                             byte[] bytes = Encoding.ASCII.GetBytes(inputString.Replace("" "", """"));
@@ -481,7 +478,7 @@ namespace Scanner
                         Console.WriteLine(""La cadena fue aceptada."");                        
 
 
-                        Queue<string> tokensQ = tools.TokenizeText(inputString, existingTokensDic, find);
+                        Queue<string> tokensQ = tools.TokenizeText(inputString, existingTokensDic);
 
                     List<string> finalTokenList = tools.TokenListToPrint(tokensQ, existingTokensDic, setsRangesDic);
 
