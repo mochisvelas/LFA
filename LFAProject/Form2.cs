@@ -54,7 +54,6 @@ namespace LFAProject
             }
             addedTSigns = dfa.TSigns(fileName);            
             List<string> Tokens = dfa.GetRegex(fileName, addedTSigns, ref error);
-            //Dictionary<string, List<string>> setsRanges = dfa.GetSetsRanges(fileName, addedTSigns);
             if (!string.IsNullOrEmpty(error)) 
             {
                 MessageBox.Show(error, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error); 
@@ -241,7 +240,7 @@ namespace LFAProject
         {
             if (dataGridView1.Rows.Count != 0)
             {
-                string programFile = "C:\\VSprojects\\LFAProject\\LFAProject\\bin\\Debug\\Scanner\\Scanner\\Program.cs";
+                string programFile = $"{AppDomain.CurrentDomain.BaseDirectory}Scanner\\Scanner\\Program.cs";
                 fileClass.IsFileTypeCorrect(programFile, ".cs", ref error);
                 if (error == "Bad filetype")
                 {
@@ -535,7 +534,7 @@ namespace Scanner
                 {
                     destDir = dlg.SelectedPath;
                 }
-                string srcDir = "C:\\VSprojects\\LFAProject\\LFAProject\\bin\\Debug\\Scanner";
+                string srcDir = $"{AppDomain.CurrentDomain.BaseDirectory}Scanner";
                 if (!string.IsNullOrEmpty(destDir))
                 {
                     fileClass.CopyFolder(srcDir, destDir);

@@ -8,7 +8,7 @@ namespace LFAProject
     class DFA
     {
         readonly Tools tools = new Tools();
-        FileClass fileHelper = new FileClass();
+        readonly FileClass fileHelper = new FileClass();
 
         /// <summary>Adds the terminal signs found in the SETS section</summary>
         /// <param name="FileName">File to read</param>
